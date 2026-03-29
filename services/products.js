@@ -1,0 +1,30 @@
+// Lista de productos hardcodeada
+const products = [
+  { id: 9903, name: "Reloj curren 8106 análogo - plateado", price: 621.05, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/06/blackpn3.jpg" },
+  { id: 9887, name: "Reloj curren 8458 análogo - plateado", price: 621.00, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8458pg.jpg" },
+  { id: 8353, name: "Reloj curren 8459 análogo - plateado azul", price: 723.93, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8459pa.jpg" },
+  { id: 9882, name: "Reloj curren 8461 análogo - plateado", price: 763.96, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8461p1.png" },
+  { id: 9863, name: "Reloj curren 8464 análogo - blanco negro", price: 781.18, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8464nd1.jpg" },
+  { id: 9862, name: "Reloj curren 8464 análogo - negro plateado", price: 792.40, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/8464p1.png" },
+  { id: 9873, name: "Reloj curren 8477 análogo - azul dorado", price: 666.68, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-54.png" },
+  { id: 9874, name: "Reloj curren 8477 análogo - blanco dorado", price: 666.68, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-51.png" },
+  { id: 9875, name: "Reloj curren 8477 análogo - negro dorado", price: 666.68, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-57.png" },
+  // { id: 9876, name: "Reloj curren 8477 análogo - negro plateado", price: 643.86, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-48.png" },
+  // { id: 8009, name: "Reloj curren 9054 análogo - plateado", price: 642.26, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/01/9054p.jpg" },
+  // { id: 9798, name: "Reloj curren 9016 análogo - plateado", price: 621.29, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/03/firep.jpg" },
+  // { id: 8090, name: "Reloj curren 9046 análogo - dorado 🔥👐", price: 630.46, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/01/9046d1.jpg" },
+  // { id: 9808, name: "Reloj curren 9089 análogo - blanco - plateado", price: 575.60, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/01/9089p.jpg" },
+  // { id: 9958, name: "Reloj curren 9101 análogo - plateado negro", price: 438.00, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-80.png" },
+  // { id: 9957, name: "Reloj curren 9096 análogo - azul rosa", price: 438.00, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/08/9096ra2.jpeg" },
+  // { id: 9956, name: "Reloj curren 9096 análogo - negro plateado", price: 438.00, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/08/9096pn2.jpg" },
+  // { id: 9826, name: "Reloj curren 9096 análogo - plateado blanco", price: 438.00, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/08/9096a3-1.jpg" },
+  // { id: 9955, name: "Reloj curren 9101 análogo - blanco plateado", price: 672.30, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-77.png" },
+  // { id: 9954, name: "Reloj curren 9101 análogo - negro dorado", price: 643.86, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-80.png" },
+  // { id: 9834, name: "Reloj curren 9102 análogo - azul dorado", price: 689.50, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-99.png" },
+  // { id: 9835, name: "Reloj curren 9102 análogo - blanco dorado", price: 689.50, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-96.png" },
+  // { id: 9837, name: "Reloj curren 9102 análogo - dorado negro", price: 655.48, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-102.png" },
+  // { id: 9840, name: "Reloj curren 9102 análogo - plateado azul", price: 655.48, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/Diseno-sin-titulo-5.png" },
+  // { id: 9841, name: "Reloj curren 9102 análogo - plateado negro", price: 689.50, image_url: "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-93.png" },
+];
+
+module.exports = products;

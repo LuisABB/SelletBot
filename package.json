@@ -1,0 +1,16 @@
+{
+  "name": "sellerbot-mvp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^17.3.1",
+    "express": "^4.18.2",
+    "mercadopago": "^2.12.0",
+    "node-fetch": "^2.7.0"
+  }
+}
