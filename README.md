@@ -53,6 +53,7 @@ Bot de ventas automatizado para WhatsApp con promo 4x3, carrito, integración Me
 - `POST /webhook` — Recibe `{ user_id, message }` y responde según el flujo 4x3 (útil para pruebas locales).
 - `POST /universal-webhook` — Webhook universal para WhatsApp Cloud API (procesa mensajes, botones, imágenes, links, etc.).
 - `POST /whatsapp-webhook` — Webhook simple para pruebas.
+- `GET /logs` — Descarga el archivo `logs.json` con el historial de interacciones.
 
 ## Ejemplo de prueba con curl
 
