@@ -3,6 +3,8 @@ const router = express.Router();
 const { handleUserMessage } = require('../services/botService');
 const whatsappService = require('../services/whatsappService');
 const { logMessage } = require('../services/logger');
+const { findUserByPhone, createUser, updateUserInteraction } = require('../helpers/users');
+const { isDuplicateMessage, markMessageProcessed } = require('../helpers/idempotency');
 
 // ================= HELPERS =================
 function normalizeNumber(number) {
@@ -51,45 +53,89 @@ router.post('/whatsapp-webhook', async (req, res) => {
 });
 
 // ================= UNIVERSAL WEBHOOK =================
-router.post('/universal-webhook', async (req, res) => {
-  try {
-    console.log('--- Nueva petición ---');
+router.post('/universal-webhook', (req, res) => {
+  // Logging de entrada
+  console.log('--- Nueva petición ---', JSON.stringify(req.body));
+  let responded = false;
+  // Helper seguro para responder solo una vez
+  function safeJson(obj) {
+    if (!responded) {
+      responded = true;
+      res.json(obj);
+    }
+  }
+  function safeSendStatus(code) {
+    if (!responded) {
+      responded = true;
+      res.sendStatus(code);
+    }
+  }
 
-    let user_id, message;
+  setImmediate(async () => {
+    try {
+      // Extraer messageId de WhatsApp
+      const messageId = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id;
+      if (!messageId) return;
 
-
-    // Detectar formato WhatsApp
-    if (req.body.entry && req.body.entry[0]?.changes) {
-      const entry = req.body.entry[0].changes[0].value;
-
-      if (!entry.messages || !entry.messages[0]) {
-        return res.sendStatus(200);
+      // Idempotencia
+      if (await isDuplicateMessage(messageId)) {
+        console.log('Mensaje duplicado, ignorando:', messageId);
+        safeSendStatus(200);
+        return;
       }
+      await markMessageProcessed(messageId);
 
-      const msg = entry.messages[0];
-      let raw_user_id = msg.from;
-      let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
-      user_id = normalized_user_id;
+      // --- Lógica original del webhook ---
+      let user_id, message;
 
-      if (
-        msg.interactive &&
-        msg.interactive.type === 'button_reply'
-      ) {
-        message = msg.interactive.button_reply.id;
-        // Loggear click de botón del usuario
-        logMessage({
-          user_id: normalized_user_id,
-          role: 'user',
-          message,
-          step: 'button_click',
-          type: 'button',
-          extra: {
-            button_reply: msg.interactive.button_reply
-          }
-        });
+
+      if (req.body.entry && req.body.entry[0]?.changes) {
+        const entry = req.body.entry[0].changes[0].value;
+        if (!entry.messages || !entry.messages[0]) return;
+        const msg = entry.messages[0];
+        let raw_user_id = msg.from;
+        let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
+        user_id = normalized_user_id;
+        // Buscar o crear usuario en la base
+        let user = await findUserByPhone(user_id);
+        if (!user) {
+          user = await createUser({ phone: user_id });
+        }
+        // Actualizar última interacción
+        await updateUserInteraction(user_id);
+        if (msg.interactive && msg.interactive.type === 'button_reply') {
+          message = msg.interactive.button_reply.id;
+          logMessage({
+            user_id: normalized_user_id,
+            role: 'user',
+            message,
+            step: 'button_click',
+            type: 'button',
+            extra: { button_reply: msg.interactive.button_reply }
+          });
+        } else {
+          message = msg.text?.body || '';
+          logMessage({
+            user_id: normalized_user_id,
+            role: 'user',
+            message,
+            step: 'text',
+            type: 'text',
+            extra: {}
+          });
+        }
       } else {
-        message = msg.text?.body || '';
-        // Loggear mensaje de texto del usuario
+        let raw_user_id = req.body.user_id;
+        let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
+        user_id = normalized_user_id;
+        // Buscar o crear usuario en la base
+        let user = await findUserByPhone(user_id);
+        if (!user) {
+          user = await createUser({ phone: user_id });
+        }
+        // Actualizar última interacción
+        await updateUserInteraction(user_id);
+        message = req.body.message;
         logMessage({
           user_id: normalized_user_id,
           role: 'user',
@@ -100,7 +146,7 @@ router.post('/universal-webhook', async (req, res) => {
         });
       }
 
-    } else {
+    /*} else {
       let raw_user_id = req.body.user_id;
       let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
       user_id = normalized_user_id;
@@ -114,16 +160,12 @@ router.post('/universal-webhook', async (req, res) => {
         type: 'text',
         extra: {}
       });
-    }
+    }*/
+      if (!user_id || !message) return;
 
-    if (!user_id || !message) {
-      return res.status(400).json({ error: 'Faltan user_id o message' });
-    }
+      let reply = null;
+      let cleanNumber = null;
 
-    let reply = null;
-    let cleanNumber = null;
-
-    // ================= WHATSAPP =================
     if (req.body.entry) {
 
       cleanNumber = normalizeNumber(user_id);
@@ -262,16 +304,20 @@ router.post('/universal-webhook', async (req, res) => {
           user.product_page += 1;
           // Confirmar que la promo fue enviada por WhatsApp
           if (promoSent) {
-            return res.json({ reply: 'Promo y productos enviados por WhatsApp.' });
+            safeJson({ reply: 'Promo y productos enviados por WhatsApp.' });
+            return;
           } else {
-            return res.json({ reply: 'Mostrando más productos...' });
+            safeJson({ reply: 'Mostrando más productos...' });
+            return;
           }
         } else {
           user.product_page = 0;
           if (promoSent) {
-            return res.json({ reply: 'Promo y todos los productos enviados por WhatsApp.' });
+            safeJson({ reply: 'Promo y todos los productos enviados por WhatsApp.' });
+            return;
           } else {
-            return res.json({ reply: 'Todos los productos enviados' });
+            safeJson({ reply: 'Todos los productos enviados' });
+            return;
           }
         }
       } else if (isVerMas) {
@@ -357,10 +403,12 @@ router.post('/universal-webhook', async (req, res) => {
             extra: { payload: verMasPayload }
           });
           user.product_page += 1;
-          return res.json({ reply: 'Mostrando más productos...' });
+          safeJson({ reply: 'Mostrando más productos...' });
+          return;
         } else {
           user.product_page = 0;
-          return res.json({ reply: 'Todos los productos enviados' });
+          safeJson({ reply: 'Todos los productos enviados' });
+          return;
         }
       } else if (isProductId) {
         // AGREGAR AL CARRITO: forzar step 'choosing' para asegurar procesamiento correcto
@@ -369,12 +417,34 @@ router.post('/universal-webhook', async (req, res) => {
         user.step = 'choosing';
         reply = handleUserMessage(cleanNumber, message);
         console.log('REPLY:', reply, typeof reply);
-        if (!reply) return res.sendStatus(200);
+        if (!reply) {
+          safeSendStatus(200);
+          return;
+        }
         // Log para depuración del objeto reply
         console.log('[DEBUG][reply tipo y valor][isProductId]', typeof reply, JSON.stringify(reply));
         if (typeof reply === 'object' && reply.generatePayment) {
           // (opcional: lógica de pago inmediato si aplica)
         } else if (typeof reply === 'object' && reply.showPaymentButton) {
+                  // Si el carrito tiene 4 productos, forzar resumen y link de pago aunque el reply no tenga showPaymentButton
+                  // if (user.cart && user.cart.length === 4) {
+                  //   // Construir resumen de productos
+                  //   let resumen = '🛒 Resumen de tu selección:\n';
+                  //   user.cart.forEach((p, idx) => {
+                  //     resumen += `${idx + 1}. ${p.name}`;
+                  //     if (p.variant) resumen += ` (${p.variant})`;
+                  //     resumen += ` - $${p.price}\n`;
+                  //   });
+                  //   resumen += '\n¡Ya tienes tus 4 relojes! Ahora te generamos tu link de pago.';
+                  //   await whatsappService.sendWhatsAppMessage(cleanNumber, resumen);
+                  //   logMessage({
+                  //     user_id: cleanNumber,
+                  //     role: 'bot',
+                  //     message: resumen,
+                  //     step: user.step,
+                  //     type: 'text'
+                  //   });
+                  // }
           // 1. Enviar mensaje resumen
           await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
           logMessage({
@@ -427,7 +497,8 @@ router.post('/universal-webhook', async (req, res) => {
             // Resetear carrito solo después de enviar el link
             const { resetCart } = require('../services/cartService');
             resetCart(cleanNumber);
-            return res.json({ reply: finalMsg });
+            safeJson({ reply: finalMsg });
+            return;
           } catch (err) {
             const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
             await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
@@ -438,7 +509,8 @@ router.post('/universal-webhook', async (req, res) => {
               step: user.step,
               type: 'text'
             });
-            return res.json({ reply: errMsg });
+            safeJson({ reply: errMsg });
+            return;
           }
         } else if (typeof reply === 'object' && reply.text) {
           const resp = await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
@@ -461,11 +533,15 @@ router.post('/universal-webhook', async (req, res) => {
           });
           console.log('WhatsApp API response:', resp);
         }
-        return res.json({ reply });
+        safeJson({ reply });
+        return;
       } else {
         // ================= FLUJO NORMAL =================
         reply = handleUserMessage(cleanNumber, message);
-        if (!reply) return res.sendStatus(200);
+        if (!reply) {
+          safeSendStatus(200);
+          return;
+        }
         // Log para depuración del objeto reply
         console.log('[DEBUG][reply tipo y valor]', typeof reply, JSON.stringify(reply));
         // Si el reply es objeto con generatePayment, generar link de pago
@@ -492,7 +568,8 @@ router.post('/universal-webhook', async (req, res) => {
             // Resetear carrito solo después de enviar el link
             const { resetCart } = require('../services/cartService');
             resetCart(cleanNumber);
-            return res.json({ reply: paymentMsg });
+            safeJson({ reply: paymentMsg });
+            return;
           } catch (err) {
             const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
             await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
@@ -503,7 +580,8 @@ router.post('/universal-webhook', async (req, res) => {
               step: user.step,
               type: 'text'
             });
-            return res.json({ reply: errMsg });
+            safeJson({ reply: errMsg });
+            return;
           }
         } else if (typeof reply === 'object' && reply.showPaymentButton) {
           await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
@@ -552,12 +630,14 @@ router.post('/universal-webhook', async (req, res) => {
             console.error('[ERROR][sendWhatsAppRawMessage] Pago:', err);
           }
           console.log('[BOT] Botón de pago enviado (o intento realizado).');
-          return res.json({ reply: reply.text });
+          safeJson({ reply: reply.text });
+          return;
         } else if (
           typeof reply === 'string' &&
           reply.includes('🔥 Promo')
         ) {
-          return res.json({ reply: 'Mensaje bloqueado' });
+          safeJson({ reply: 'Mensaje bloqueado' });
+          return;
         } else {
           const msgToSend = typeof reply === 'object' ? reply.text : reply;
           await whatsappService.sendWhatsAppMessage(cleanNumber, msgToSend);
@@ -577,12 +657,16 @@ router.post('/universal-webhook', async (req, res) => {
       reply = handleUserMessage(user_id, message);
     }
 
-    res.json({ reply });
+    safeJson({ reply });
 
   } catch (e) {
     console.error('ERROR:', e);
-    res.status(500).json({ error: e.message });
+    if (!responded) {
+      responded = true;
+      res.status(500).json({ error: e.message });
+    }
   }
+  });
 });
 
 // ================= VERIFY TOKEN =================
