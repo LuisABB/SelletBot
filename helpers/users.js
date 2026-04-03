@@ -4,7 +4,9 @@ const { connectDB } = require('../db');
 // Encuentra un usuario por teléfono
 async function findUserByPhone(phone) {
   const db = await connectDB();
-  return db.collection('users').findOne({ phone });
+  const user = await db.collection('users').findOne({ phone });
+  console.log('[findUserByPhone] Buscando usuario con phone:', phone, '| Encontrado:', !!user);
+  return user;
 }
 
 // Crea un nuevo usuario
@@ -25,7 +27,9 @@ async function createUser({ phone, name = '', source = 'whatsapp', tags = [], st
       last_order_date: null
     }
   };
+  console.log('[createUser] Creando usuario:', user);
   const result = await db.collection('users').insertOne(user);
+  console.log('[createUser] Resultado insertOne:', result);
   return { ...user, _id: result.insertedId };
 }
 
