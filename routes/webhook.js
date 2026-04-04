@@ -107,7 +107,12 @@ router.post('/universal-webhook', (req, res) => {
         // Buscar o crear usuario en la base
         let user = await findUserByPhone(user_id);
         if (!user) {
-          user = await createUser({ phone: user_id });
+          // Obtener nombre del perfil desde contacts si viene en el mensaje
+          let profileName = '';
+          if (entry.contacts && entry.contacts[0] && entry.contacts[0].profile && entry.contacts[0].profile.name) {
+            profileName = entry.contacts[0].profile.name;
+          }
+          user = await createUser({ phone: user_id, name: profileName });
         }
         // Actualizar última interacción
         await updateUserInteraction(user_id);

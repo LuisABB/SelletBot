@@ -20,15 +20,25 @@ async function findConversationByUser(user_id) {
 async function createConversation({ user_id, phone, state = 'inicio', context = {} }) {
   const db = await connectDB();
   const now = new Date();
-  const conversation = {
-    user_id: typeof user_id === 'string' && ObjectId.isValid(user_id) ? new ObjectId(user_id) : user_id,
-    phone,
-    state,
-    context,
-    last_message_at: now
-  };
-  const result = await db.collection('conversations').insertOne(conversation);
-  return { ...conversation, _id: result.insertedId };
+    const update = {
+      $set: {
+        phone,
+        state,
+        context,
+        last_message_at: now
+      },
+      $setOnInsert: {
+        user_id: typeof user_id === 'string' && ObjectId.isValid(user_id) ? new ObjectId(user_id) : user_id,
+        created_at: now
+      }
+    };
+    const options = { upsert: true, returnDocument: 'after' };
+    const result = await db.collection('conversations').findOneAndUpdate(
+      { user_id: typeof user_id === 'string' && ObjectId.isValid(user_id) ? new ObjectId(user_id) : user_id },
+      update,
+      options
+    );
+    return result.value;
 }
 
 // Actualizar estado/contexto
