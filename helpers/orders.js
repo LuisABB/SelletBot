@@ -1,12 +1,13 @@
 // helpers/orders.js
 const { connectDB } = require('../db');
 
+const { ObjectId } = require('mongodb');
 // Crear un nuevo pedido
 async function createOrder({ user_id, products, total, payment_link = '', payment_expiration = null, status = 'pending' }) {
   const db = await connectDB();
   const now = new Date();
   const order = {
-    user_id,
+    user_id: typeof user_id === 'string' && ObjectId.isValid(user_id) ? new ObjectId(user_id) : user_id,
     products,
     total,
     status,
@@ -21,7 +22,13 @@ async function createOrder({ user_id, products, total, payment_link = '', paymen
 // Buscar pedidos por usuario
 async function findOrdersByUser(user_id) {
   const db = await connectDB();
-  return db.collection('orders').find({ user_id }).toArray();
+  let query = {};
+  if (ObjectId.isValid(user_id)) {
+    query.user_id = new ObjectId(user_id);
+  } else {
+    query.user_id = user_id;
+  }
+  return db.collection('orders').find(query).toArray();
 }
 
 // Actualizar status de pedido

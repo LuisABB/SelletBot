@@ -9,7 +9,7 @@ function handleUserMessage(user_id, message) {
 
   logMessage({ user_id, role: 'user', message, step: user.step });
 
-  const RESET_WORDS = ['hola', 'buenas', 'quiero información', 'información', 'Ayuda','Tienda','Precio','Ola','Buen día'];
+  const RESET_WORDS = ['hola', 'buenas', 'quiero información', 'información', 'Ayuda','Tienda','Precio','Ola','Buen día', 'inicio'];
   const normalizedMsg = message.trim().toLowerCase();
 
   if ((user.step === 'start' || user.step === 'choosing') && RESET_WORDS.includes(normalizedMsg)) {

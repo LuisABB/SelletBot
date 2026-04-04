@@ -1,12 +1,13 @@
 // helpers/scheduledTasks.js
 const { connectDB } = require('../db');
 
+const { ObjectId } = require('mongodb');
 // Crear tarea programada
 async function createScheduledTask({ user_id, type, execute_at, status = 'pending', metadata = {} }) {
   const db = await connectDB();
   const now = new Date();
   const task = {
-    user_id,
+    user_id: typeof user_id === 'string' && ObjectId.isValid(user_id) ? new ObjectId(user_id) : user_id,
     type,
     execute_at,
     status,

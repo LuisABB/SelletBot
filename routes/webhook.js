@@ -114,9 +114,10 @@ router.post('/universal-webhook', (req, res) => {
         // Conversación
         let conversation = await findConversationByUser(user_id);
         if (!conversation) {
-          conversation = await createConversation({ user_id, state: 'start', context: {} });
+          // user es el documento de users, así que usamos su _id y phone
+          conversation = await createConversation({ user_id: user._id, phone: user.phone, state: 'start', context: {} });
         } else {
-          await updateConversation(user_id, { state: 'start', context: {} });
+          await updateConversation(user._id, { state: 'start', context: {} });
         }
 
         if (msg.interactive && msg.interactive.type === 'button_reply') {
@@ -180,6 +181,16 @@ router.post('/universal-webhook', (req, res) => {
 
         // Si el mensaje es un id de producto válido, agregar al carrito
         const prodId = parseInt(message.trim());
+
+        // Buscar conversación actual
+        let currentConversation = await findConversationByUser(cleanNumber);
+        // Si el usuario está en checkout, ignorar mensajes de producto
+        if (currentConversation && currentConversation.state === 'checkout' && !isFlujoInicial && !isVerMas) {
+          // Opcional: puedes enviar un mensaje informativo aquí
+          safeJson({ reply: 'Ya tienes un pedido pendiente de pago. Revisa tu link o escribe "inicio" para empezar de nuevo.' });
+          return;
+        }
+
         const isProductId = !isNaN(prodId) && products.some(p => p.id === prodId);
 
         if (isFlujoInicial) {
@@ -457,9 +468,44 @@ router.post('/universal-webhook', (req, res) => {
             const sorted = [...user.cart].sort((a, b) => b.price - a.price);
             const total = (sorted[0].price + sorted[1].price + sorted[2].price).toFixed(2);
             const { createPaymentLink } = require('../services/mercadoPagoService');
+            const { createOrder } = require('../helpers/orders');
+            const { createScheduledTask } = require('../helpers/scheduledTasks');
+            const { ObjectId } = require('mongodb');
             try {
               const title = 'Combo 4x3 Relojes Curren';
               const paymentLink = await createPaymentLink({ title, price: Number(total) });
+
+              // Crear la orden en la base de datos
+              const orderId = new ObjectId();
+              // Buscar el usuario en la base para obtener su _id
+              let dbUser = await findUserByPhone(cleanNumber);
+              const order = {
+                _id: orderId,
+                user_id: dbUser?._id || cleanNumber,
+                products: user.cart.map(p => ({
+                  product_id: p.id,
+                  price: p.price,
+                  quantity: 1
+                })),
+                total: Number(total),
+                status: 'pending',
+                payment_link: paymentLink,
+                payment_expiration: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 días
+                created_at: new Date()
+              };
+              await createOrder(order);
+
+              // Crear la tarea programada de recordatorio
+              const scheduledTask = {
+                user_id: dbUser?._id || cleanNumber,
+                type: 'payment_reminder',
+                execute_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h después
+                status: 'pending',
+                metadata: { order_id: orderId },
+                created_at: new Date()
+              };
+              await createScheduledTask(scheduledTask);
+
               const finalMsg =
                 '✔️ Envío rápido\n' +
                 '✔️ Pago seguro con Mercado Pago\n' +
