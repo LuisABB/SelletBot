@@ -2,6 +2,24 @@
 
 Todas las modificaciones relevantes del proyecto SellerBot MVP.
 
+## [2.0.0] - 2026-04-04
+### Added
+### Cambios principales
+- Integración completa con base de datos MongoDB:
+	- Persistencia de usuarios, conversaciones, órdenes y tareas programadas.
+	- Estructura de usuario con métricas, status, historial y fuente.
+	- Conversaciones con contexto, estado y actualización segura.
+	- Órdenes y pagos registrados con relación a usuario y expiración.
+	- Tareas programadas para recordatorios de pago.
+- Mejor manejo de errores y logging en la generación de links de pago Mercado Pago.
+- Código DRY y más fácil de mantener en el flujo de WhatsApp y pagos.
+
+### Notas de migración
+- Si tienes usuarios existentes, revisa los estados para alinearlos con la nueva lógica (`lead`, `prospecto`, etc).
+
+### Próximos pasos sugeridos
+- Implementar lógica para cambiar a `cliente` y `recurrente` según órdenes.
+
 ## [1.0.0] - 2026-03-28
 ### Added
 - Estructura inicial del bot con Express y endpoints `/webhook`, `/universal-webhook`, `/whatsapp-webhook`.

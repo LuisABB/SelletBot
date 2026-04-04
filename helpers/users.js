@@ -27,30 +27,24 @@ async function createUser({ phone, name = '', source = 'whatsapp', tags = [], st
       last_order_date: null
     }
   };
-  console.log('[createUser] Creando usuario:', user);
   const result = await db.collection('users').insertOne(user);
-  console.log('[createUser] Resultado insertOne:', result);
   return { ...user, _id: result.insertedId };
 }
 
 // Actualiza la última interacción y status
 async function updateUserInteraction(phone, status = null) {
   const db = await connectDB();
-  // Si es lead, pasa a prospecto
-  await db.collection('users').updateOne(
-    { phone, status: 'lead' },
-    { $set: { last_interaction: new Date(), status: 'prospecto' } }
-  );
-  // Si no era lead, solo actualiza interacción
-  await db.collection('users').updateOne(
-    { phone, status: { $ne: 'lead' } },
-    { $set: { last_interaction: new Date() } }
-  );
-  // Si se pasa un status explícito, lo actualiza
+  // Solo actualiza status si se pasa explícitamente
   if (status) {
     await db.collection('users').updateOne(
       { phone },
-      { $set: { status } }
+      { $set: { last_interaction: new Date(), status } }
+    );
+  } else {
+    // Solo actualiza la última interacción
+    await db.collection('users').updateOne(
+      { phone },
+      { $set: { last_interaction: new Date() } }
     );
   }
 }

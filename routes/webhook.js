@@ -157,6 +157,10 @@ router.post('/universal-webhook', (req, res) => {
         }
 
         if (msg.interactive && msg.interactive.type === 'button_reply') {
+          // Actualizar status a 'prospecto' al presionar el primer botón
+          if (user && user.status !== 'prospecto') {
+            await updateUserInteraction(user_id, { status: 'prospecto' });
+          }
           message = msg.interactive.button_reply.id;
           logMessage({
             user_id: normalized_user_id,
@@ -683,7 +687,6 @@ router.post('/universal-webhook', (req, res) => {
                 type: 'button',
                 extra: { payload: buttonPayload }
               });
-              console.log('[WhatsApp API][sendWhatsAppRawMessage] Pago:', JSON.stringify(respButton));
             } catch (err) {
               console.error('[ERROR][sendWhatsAppRawMessage] Pago:', err);
             }
