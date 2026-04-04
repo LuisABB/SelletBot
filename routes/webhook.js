@@ -676,8 +676,19 @@ router.post('/universal-webhook', (req, res) => {
       else {
         reply = handleUserMessage(user_id, message);
       }
-    } catch (e) {
-      console.error('ERROR:', e);
+    }  catch (e) {
+      // Logging robusto de errores críticos
+      if (typeof logMessage === 'function') {
+        logMessage({
+          user_id: undefined,
+          role: 'system',
+          message: 'ERROR UNIVERSAL WEBHOOK',
+          step: 'universal-webhook',
+          type: 'error',
+          extra: { error: e && e.message ? e.message : e, stack: e && e.stack ? e.stack : undefined }
+        });
+      }
+      console.error('ERROR UNIVERSAL WEBHOOK:', e);
     }
   });
 });
