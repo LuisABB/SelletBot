@@ -3,6 +3,9 @@ const router = express.Router();
 const { handleUserMessage } = require('../services/botService');
 const whatsappService = require('../services/whatsappService');
 const { logMessage } = require('../services/logger');
+const { findUserByPhone, createUser, updateUserInteraction } = require('../helpers/users');
+const { isDuplicateMessage, markMessageProcessed } = require('../helpers/idempotency');
+const { findConversationByUser, createConversation, updateConversation } = require('../helpers/conversations');
 
 // ================= HELPERS =================
 function normalizeNumber(number) {
@@ -51,539 +54,677 @@ router.post('/whatsapp-webhook', async (req, res) => {
 });
 
 // ================= UNIVERSAL WEBHOOK =================
-router.post('/universal-webhook', async (req, res) => {
-  try {
-    console.log('--- Nueva petición ---');
+router.post('/universal-webhook', (req, res) => {
+  // Logging de entrada
+  console.log('--- Nueva petición ---', JSON.stringify(req.body));
+  let responded = false;
+  // Helper seguro para responder solo una vez
+  function safeJson(obj) {
+    if (!responded) {
+      responded = true;
+      res.json(obj);
+    }
+  }
+  function safeSendStatus(code) {
+    if (!responded) {
+      responded = true;
+      res.sendStatus(code);
+    }
+  }
 
-    let user_id, message;
 
-
-    // Detectar formato WhatsApp
-    if (req.body.entry && req.body.entry[0]?.changes) {
-      const entry = req.body.entry[0].changes[0].value;
-
-      if (!entry.messages || !entry.messages[0]) {
-        return res.sendStatus(200);
+  setImmediate(async () => {
+    try {
+      // Extraer messageId de WhatsApp
+      const messageId = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id;
+      if (!messageId) {
+        safeSendStatus(200);
+        return;
       }
 
-      const msg = entry.messages[0];
-      let raw_user_id = msg.from;
-      let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
-      user_id = normalized_user_id;
-
-      if (
-        msg.interactive &&
-        msg.interactive.type === 'button_reply'
-      ) {
-        message = msg.interactive.button_reply.id;
-        // Loggear click de botón del usuario
-        logMessage({
-          user_id: normalized_user_id,
-          role: 'user',
-          message,
-          step: 'button_click',
-          type: 'button',
-          extra: {
-            button_reply: msg.interactive.button_reply
-          }
-        });
-      } else {
-        message = msg.text?.body || '';
-        // Loggear mensaje de texto del usuario
-        logMessage({
-          user_id: normalized_user_id,
-          role: 'user',
-          message,
-          step: 'text',
-          type: 'text',
-          extra: {}
-        });
+      // Idempotencia
+      if (await isDuplicateMessage(messageId)) {
+        console.log('Mensaje duplicado, ignorando:', messageId);
+        safeSendStatus(200);
+        return;
       }
+      await markMessageProcessed(messageId);
 
-    } else {
-      let raw_user_id = req.body.user_id;
-      let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
-      user_id = normalized_user_id;
-      message = req.body.message;
-      // Loggear mensaje recibido por API local
-      logMessage({
-        user_id: normalized_user_id,
-        role: 'user',
-        message,
-        step: 'text',
-        type: 'text',
-        extra: {}
-      });
-    }
+      // --- Lógica original del webhook ---
+      let user_id, message;
 
-    if (!user_id || !message) {
-      return res.status(400).json({ error: 'Faltan user_id o message' });
-    }
-
-    let reply = null;
-    let cleanNumber = null;
-
-    // ================= WHATSAPP =================
-    if (req.body.entry) {
-
-      cleanNumber = normalizeNumber(user_id);
-      cleanNumber = fixMexicanNumber(cleanNumber);
-
-      console.log('📤 Enviando a:', cleanNumber);
-
-      const { getUserState } = require('../services/cartService');
-      let products = require('../services/products');
-
-      // Ordenar productos
-      products = products.slice().sort((a, b) => a.name.localeCompare(b.name));
-
-      // Quitar duplicados
-      const seen = new Set();
-      products = products.filter(p => {
-        if (seen.has(p.name)) return false;
-        seen.add(p.name);
-        return true;
-      });
-
-      const user = getUserState(cleanNumber);
-
-      const RESET_WORDS = ['hi', 'hola', 'inicio', 'start', 'reiniciar'];
-      const normalizedMsg = message.trim().toLowerCase();
-
-      // ================= FLUJO INICIAL, VER MÁS, O AGREGAR AL CARRITO =================
-      const isFlujoInicial =
-        (user.step === 'choosing' || user.step === 'start') &&
-        user.cart_count === 0 &&
-        !user.flujo_inicial_enviado &&
-        RESET_WORDS.includes(normalizedMsg);
-
-      const isVerMas = message === 'VER_MAS_PRODUCTOS';
-
-      // Si el mensaje es un id de producto válido, agregar al carrito
-      const prodId = parseInt(message.trim());
-      const isProductId = !isNaN(prodId) && products.some(p => p.id === prodId);
-
-      if (isFlujoInicial) {
-        if (!user.product_page) user.product_page = 0;
-        const pageSize = 4;
-        const startIdx = user.product_page * pageSize;
-        const endIdx = startIdx + pageSize;
-        const productsToSend = products.slice(startIdx, endIdx);
-        // Promo solo en el inicio
-        let promoSent = false;
-        if (user.product_page === 0) {
-          user.flujo_inicial_enviado = true;
-          const promoText = '🔥 PROMO 4x3 por tiempo limitado\n\nTe llevas 4 relojes y uno va GRATIS\n\n👇 Elige el primero';
-          await whatsappService.sendWhatsAppMessage(cleanNumber, promoText);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: promoText,
-            step: user.step,
-            type: 'text'
-          });
-          promoSent = true;
+      if (req.body.entry && req.body.entry[0]?.changes) {
+        const entry = req.body.entry[0].changes[0].value;
+        if (!entry.messages || !entry.messages[0]) {
+          safeSendStatus(200);
+          return;
         }
-        for (const p of productsToSend) {
-          await new Promise(r => setTimeout(r, 1500));
-          let caption = `${p.name}`;
-          if (p.variant) caption += `\nVariante: ${p.variant}`;
-          caption += `\nPrecio: $${p.price}`;
-          await whatsappService.sendWhatsAppImage(cleanNumber, p.image_url, caption);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: caption,
-            step: user.step,
-            type: 'image',
-            extra: { image_url: p.image_url }
-          });
-          await new Promise(r => setTimeout(r, 1500));
-          const buttonPayload = {
-            messaging_product: 'whatsapp',
-            to: cleanNumber,
-            type: 'interactive',
-            interactive: {
-              type: 'button',
-              body: { text: 'Quiero este 👆' },
-              action: {
-                buttons: [
-                  {
-                    type: 'reply',
-                    reply: {
-                      id: String(p.id),
-                      title: 'Agregar al carrito'
-                    }
-                  }
-                ]
-              }
-            }
-          };
-          await whatsappService.sendWhatsAppRawMessage(buttonPayload);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: 'Botón: Agregar al carrito',
-            step: user.step,
-            type: 'button',
-            extra: { payload: buttonPayload }
-          });
-        }
-        if (endIdx < products.length) {
-          const verMasPayload = {
-            messaging_product: 'whatsapp',
-            to: cleanNumber,
-            type: 'interactive',
-            interactive: {
-              type: 'button',
-              body: { text: '¿Quieres ver más productos?' },
-              action: {
-                buttons: [
-                  {
-                    type: 'reply',
-                    reply: {
-                      id: 'VER_MAS_PRODUCTOS',
-                      title: 'Ver más'
-                    }
-                  }
-                ]
-              }
-            }
-          };
-          await whatsappService.sendWhatsAppRawMessage(verMasPayload);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: 'Botón: Ver más productos',
-            step: user.step,
-            type: 'button',
-            extra: { payload: verMasPayload }
-          });
-          user.product_page += 1;
-          // Confirmar que la promo fue enviada por WhatsApp
-          if (promoSent) {
-            return res.json({ reply: 'Promo y productos enviados por WhatsApp.' });
-          } else {
-            return res.json({ reply: 'Mostrando más productos...' });
+        const msg = entry.messages[0];
+        let raw_user_id = msg.from;
+        let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
+        user_id = normalized_user_id;
+        // Buscar o crear usuario en la base
+        let user = await findUserByPhone(user_id);
+        if (!user) {
+          // Obtener nombre del perfil desde contacts si viene en el mensaje
+          let profileName = '';
+          if (entry.contacts && entry.contacts[0] && entry.contacts[0].profile && entry.contacts[0].profile.name) {
+            profileName = entry.contacts[0].profile.name;
           }
-        } else {
-          user.product_page = 0;
-          if (promoSent) {
-            return res.json({ reply: 'Promo y todos los productos enviados por WhatsApp.' });
-          } else {
-            return res.json({ reply: 'Todos los productos enviados' });
+          user = await createUser({ phone: user_id, name: profileName });
+        }
+        // Actualizar última interacción
+        await updateUserInteraction(user_id);
+        // Conversación
+        let conversation = await findConversationByUser(user_id);
+        let newState = '1-inicio';
+        let newContext = {};
+        // Detectar estado según el flujo
+        if (msg.text?.body) {
+          const txt = msg.text.body.trim().toLowerCase();
+          if (["hi","hola","inicio","start","reiniciar"].includes(txt)) {
+            newState = 'inicio';
           }
         }
-      } else if (isVerMas) {
-        // Permitir ver más productos aunque no sea RESET_WORDS
-        if (!user.product_page) user.product_page = 0;
-        const pageSize = 4;
-        const startIdx = user.product_page * pageSize;
-        const endIdx = startIdx + pageSize;
-        const productsToSend = products.slice(startIdx, endIdx);
-        for (const p of productsToSend) {
-          await new Promise(r => setTimeout(r, 1500));
-          let caption = `${p.name}`;
-          if (p.variant) caption += `\nVariante: ${p.variant}`;
-          caption += `\nPrecio: $${p.price}`;
-          await whatsappService.sendWhatsAppImage(cleanNumber, p.image_url, caption);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: caption,
-            step: user.step,
-            type: 'image',
-            extra: { image_url: p.image_url }
-          });
-          await new Promise(r => setTimeout(r, 1500));
-          const buttonPayload = {
-            messaging_product: 'whatsapp',
-            to: cleanNumber,
-            type: 'interactive',
-            interactive: {
-              type: 'button',
-              body: { text: 'Quiero este 👆' },
-              action: {
-                buttons: [
-                  {
-                    type: 'reply',
-                    reply: {
-                      id: String(p.id),
-                      title: 'Agregar al carrito'
-                    }
-                  }
-                ]
-              }
-            }
-          };
-          await whatsappService.sendWhatsAppRawMessage(buttonPayload);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: 'Botón: Agregar al carrito',
-            step: user.step,
-            type: 'button',
-            extra: { payload: buttonPayload }
-          });
+        if (msg.interactive && msg.interactive.type === 'button_reply') {
+          if (msg.interactive.button_reply.id === 'VER_MAS_PRODUCTOS') {
+            newState = 'viendo_catalogo';
+          }
+          if (!isNaN(parseInt(msg.interactive.button_reply.id))) {
+            newState = 'producto_seleccionado';
+          }
         }
-        if (endIdx < products.length) {
-          const verMasPayload = {
-            messaging_product: 'whatsapp',
-            to: cleanNumber,
-            type: 'interactive',
-            interactive: {
-              type: 'button',
-              body: { text: '¿Quieres ver más productos?' },
-              action: {
-                buttons: [
-                  {
-                    type: 'reply',
-                    reply: {
-                      id: 'VER_MAS_PRODUCTOS',
-                      title: 'Ver más'
-                    }
-                  }
-                ]
-              }
-            }
-          };
-          await whatsappService.sendWhatsAppRawMessage(verMasPayload);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: 'Botón: Ver más productos',
-            step: user.step,
-            type: 'button',
-            extra: { payload: verMasPayload }
-          });
-          user.product_page += 1;
-          return res.json({ reply: 'Mostrando más productos...' });
-        } else {
-          user.product_page = 0;
-          return res.json({ reply: 'Todos los productos enviados' });
-        }
-      } else if (isProductId) {
-        // AGREGAR AL CARRITO: forzar step 'choosing' para asegurar procesamiento correcto
         const { getUserState } = require('../services/cartService');
-        const user = getUserState(cleanNumber);
-        user.step = 'choosing';
-        reply = handleUserMessage(cleanNumber, message);
-        console.log('REPLY:', reply, typeof reply);
-        if (!reply) return res.sendStatus(200);
-        // Log para depuración del objeto reply
-        console.log('[DEBUG][reply tipo y valor][isProductId]', typeof reply, JSON.stringify(reply));
-        if (typeof reply === 'object' && reply.generatePayment) {
-          // (opcional: lógica de pago inmediato si aplica)
-        } else if (typeof reply === 'object' && reply.showPaymentButton) {
-          // 1. Enviar mensaje resumen
-          await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
+        const userState = getUserState(user_id);
+        if (userState && userState.cart && userState.cart.length > 0) {
+          newContext.cart = userState.cart.map(p => ({ product_id: p.id, quantity: 1 }));
+          newState = 'producto_seleccionado';
+        }
+        const { findOrderByUser } = require('../helpers/orders');
+        const lastOrder = await findOrderByUser ? await findOrderByUser(user._id) : null;
+        if (lastOrder) {
+          newContext.order_id = lastOrder._id;
+          if (lastOrder.status === 'paid') newState = 'pagado';
+        }
+        // Última opción
+        if (msg.interactive && msg.interactive.type === 'button_reply') {
+          newContext.last_option = msg.interactive.button_reply.id;
+        }
+        if (!conversation) {
+          conversation = await createConversation({ user_id: user._id, phone: user.phone, state: newState, context: newContext });
+        } else {
+          await updateConversation(user._id, { state: newState, context: newContext });
+        }
+
+        if (msg.interactive && msg.interactive.type === 'button_reply') {
+          // Actualizar status a 'prospecto' al presionar el primer botón
+          if (user && user.status !== 'prospecto') {
+            await updateUserInteraction(user_id, { status: 'prospecto' });
+          }
+          message = msg.interactive.button_reply.id;
           logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: reply.text,
-            step: user.step,
-            type: 'text'
+            user_id: normalized_user_id,
+            role: 'user',
+            message,
+            step: 'button_reply',
+            type: 'button',
+            extra: {}
           });
-          // 2. Enviar imágenes de los productos elegidos
-          for (const p of user.cart) {
-            await new Promise(r => setTimeout(r, 1200));
-            await whatsappService.sendWhatsAppImage(cleanNumber, p.image_url, '');
+          await updateConversation(user_id, { state: 'text', context: {} });
+        } else {
+          message = msg.text?.body || '';
+        }
+      } // <--- cierre correcto del if (req.body.entry && req.body.entry[0]?.changes)
+
+      if (!user_id || !message) {
+        safeSendStatus(200);
+        return;
+      }
+
+      let reply = null;
+      let cleanNumber = null;
+
+      // --- Indentación clara: todo el flujo principal dentro de este bloque ---
+      if (req.body.entry) {
+        cleanNumber = normalizeNumber(user_id);
+        cleanNumber = fixMexicanNumber(cleanNumber);
+
+        console.log('📤 Enviando a:', cleanNumber);
+
+        const { getUserState } = require('../services/cartService');
+        let products = require('../services/products');
+
+        // Ordenar productos
+        products = products.slice().sort((a, b) => a.name.localeCompare(b.name));
+
+        // Quitar duplicados
+        const seen = new Set();
+        products = products.filter(p => {
+          if (seen.has(p.name)) return false;
+          seen.add(p.name);
+          return true;
+        });
+
+        const user = getUserState(cleanNumber);
+
+        const RESET_WORDS = ['hi', 'hola', 'inicio', 'start', 'reiniciar'];
+        const normalizedMsg = message.trim().toLowerCase();
+
+        // ================= FLUJO INICIAL, VER MÁS, O AGREGAR AL CARRITO =================
+        const isFlujoInicial =
+          (user.step === 'choosing' || user.step === 'start') &&
+          user.cart_count === 0 &&
+          !user.flujo_inicial_enviado &&
+          RESET_WORDS.includes(normalizedMsg);
+
+        const isVerMas = message === 'VER_MAS_PRODUCTOS';
+
+        // Si el mensaje es un id de producto válido, agregar al carrito
+        const prodId = parseInt(message.trim());
+
+        // Buscar conversación actual
+        let currentConversation = await findConversationByUser(cleanNumber);
+        // ...existing code...
+        // Si el usuario está en checkout, ignorar mensajes de producto
+        if (currentConversation && currentConversation.state === 'checkout' && !isFlujoInicial && !isVerMas) {
+          safeJson({ reply: 'Ya tienes un pedido pendiente de pago. Revisa tu link o escribe "inicio" para empezar de nuevo.' });
+          return;
+        }
+
+        const isProductId = !isNaN(prodId) && products.some(p => p.id === prodId);
+
+        if (isFlujoInicial) {
+          if (!user.product_page) user.product_page = 0;
+          const pageSize = 4;
+          const startIdx = user.product_page * pageSize;
+          const endIdx = startIdx + pageSize;
+          const productsToSend = products.slice(startIdx, endIdx);
+          // Promo solo en el inicio
+          let promoSent = false;
+          if (user.product_page === 0) {
+            user.flujo_inicial_enviado = true;
+            const promoText = '🔥 PROMO 4x3 por tiempo limitado\n\nTe llevas 4 relojes y uno va GRATIS\n\n👇 Elige el primero';
+            await whatsappService.sendWhatsAppMessage(cleanNumber, promoText);
             logMessage({
               user_id: cleanNumber,
               role: 'bot',
-              message: '',
+              message: promoText,
+              step: user.step,
+              type: 'text'
+            });
+            promoSent = true;
+          }
+          for (const p of productsToSend) {
+            await new Promise(r => setTimeout(r, 1500));
+            let caption = `${p.name}`;
+            if (p.variant) caption += `\nVariante: ${p.variant}`;
+            caption += `\nPrecio: $${p.price}`;
+            await whatsappService.sendWhatsAppImage(cleanNumber, p.image_url, caption);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: caption,
               step: user.step,
               type: 'image',
               extra: { image_url: p.image_url }
             });
-          }
-          // 3. Esperar antes de enviar el mensaje de pago
-          await new Promise(r => setTimeout(r, 1500));
-          // 4. Generar el link de pago y enviar mensaje final
-          const sorted = [...user.cart].sort((a, b) => b.price - a.price);
-          const total = (sorted[0].price + sorted[1].price + sorted[2].price).toFixed(2);
-          const { createPaymentLink } = require('../services/mercadoPagoService');
-          try {
-            const title = 'Combo 4x3 Relojes Curren';
-            const paymentLink = await createPaymentLink({ title, price: Number(total) });
-            const finalMsg =
-              '✔️ Envío rápido\n' +
-              '✔️ Pago seguro con Mercado Pago\n' +
-              '✔️ Garantía incluida\n\n' +
-              '🔥 Tu paquete ya está listo\n' +
-              'Paga aquí 👇\n' +
-              '💡 Puedes pagar con tarjeta o efectivo (OXXO)'+
-              '(Disponible por 3 días)\n' +
-              paymentLink;
-            await whatsappService.sendWhatsAppMessage(cleanNumber, finalMsg);
-            logMessage({
-              user_id: cleanNumber,
-              role: 'bot',
-              message: finalMsg,
-              step: user.step,
-              type: 'payment_link',
-              extra: { paymentLink }
-            });
-            // Resetear carrito solo después de enviar el link
-            const { resetCart } = require('../services/cartService');
-            resetCart(cleanNumber);
-            return res.json({ reply: finalMsg });
-          } catch (err) {
-            const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
-            await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
-            logMessage({
-              user_id: cleanNumber,
-              role: 'bot',
-              message: errMsg,
-              step: user.step,
-              type: 'text'
-            });
-            return res.json({ reply: errMsg });
-          }
-        } else if (typeof reply === 'object' && reply.text) {
-          const resp = await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: reply.text,
-            step: user.step,
-            type: 'text'
-          });
-          console.log('WhatsApp API response:', resp);
-        } else if (typeof reply === 'string') {
-          const resp = await whatsappService.sendWhatsAppMessage(cleanNumber, reply);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: reply,
-            step: user.step,
-            type: 'text'
-          });
-          console.log('WhatsApp API response:', resp);
-        }
-        return res.json({ reply });
-      } else {
-        // ================= FLUJO NORMAL =================
-        reply = handleUserMessage(cleanNumber, message);
-        if (!reply) return res.sendStatus(200);
-        // Log para depuración del objeto reply
-        console.log('[DEBUG][reply tipo y valor]', typeof reply, JSON.stringify(reply));
-        // Si el reply es objeto con generatePayment, generar link de pago
-        if (typeof reply === 'object' && reply.generatePayment) {
-          const { getUserState } = require('../services/cartService');
-          const user = getUserState(cleanNumber);
-          // Calcular total (3 más caros)
-          const sorted = [...user.cart].sort((a, b) => b.price - a.price);
-          const total = sorted[0].price + sorted[1].price + sorted[2].price;
-          const { createPaymentLink } = require('../services/mercadoPagoService');
-          try {
-            const title = 'Combo 4x3 Relojes Curren';
-            const paymentLink = await createPaymentLink({ title, price: total });
-            const paymentMsg = `✔️ Envío rápido\n✔️ Pago seguro con Mercado Pago\n✔️ Garantía incluida\n\n🔥 Tu paquete ya quedó listo\n\nAquí está tu link 👇 tu link de pago: ${paymentLink}`;
-            await whatsappService.sendWhatsAppMessage(cleanNumber, paymentMsg);
-            logMessage({
-              user_id: cleanNumber,
-              role: 'bot',
-              message: paymentMsg,
-              step: user.step,
-              type: 'payment_link',
-              extra: { paymentLink }
-            });
-            // Resetear carrito solo después de enviar el link
-            const { resetCart } = require('../services/cartService');
-            resetCart(cleanNumber);
-            return res.json({ reply: paymentMsg });
-          } catch (err) {
-            const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
-            await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
-            logMessage({
-              user_id: cleanNumber,
-              role: 'bot',
-              message: errMsg,
-              step: user.step,
-              type: 'text'
-            });
-            return res.json({ reply: errMsg });
-          }
-        } else if (typeof reply === 'object' && reply.showPaymentButton) {
-          await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: reply.text,
-            step: user.step,
-            type: 'text'
-          });
-          // Esperar 1.5 segundos antes de enviar el botón interactivo
-          await new Promise(r => setTimeout(r, 1500));
-          console.log('[BOT] Enviando botón de pago interactivo...');
-          try {
+            await updateConversation(cleanNumber, { state: user.step, context: { last_product: p } });
+            await new Promise(r => setTimeout(r, 1500));
             const buttonPayload = {
               messaging_product: 'whatsapp',
               to: cleanNumber,
               type: 'interactive',
               interactive: {
                 type: 'button',
-                body: { text: '🔥 Tu paquete ya quedó listo\n\nTe dejo tu link de pago seguro aquí 👇\n(Disponible por 3 días)' },
+                body: { text: 'Quiero este 👆' },
                 action: {
                   buttons: [
                     {
                       type: 'reply',
                       reply: {
-                        id: 'GENERAR_LINK_PAGO',
-                        title: 'Generar link de pago'
+                        id: String(p.id),
+                        title: 'Agregar al carrito'
                       }
                     }
                   ]
                 }
               }
             };
-            const respButton = await whatsappService.sendWhatsAppRawMessage(buttonPayload);
+            await whatsappService.sendWhatsAppRawMessage(buttonPayload);
             logMessage({
               user_id: cleanNumber,
               role: 'bot',
-              message: 'Botón: Generar link de pago',
+              message: 'Botón: Agregar al carrito',
               step: user.step,
               type: 'button',
               extra: { payload: buttonPayload }
             });
-            console.log('[WhatsApp API][sendWhatsAppRawMessage] Pago:', JSON.stringify(respButton));
-          } catch (err) {
-            console.error('[ERROR][sendWhatsAppRawMessage] Pago:', err);
           }
-          console.log('[BOT] Botón de pago enviado (o intento realizado).');
-          return res.json({ reply: reply.text });
-        } else if (
-          typeof reply === 'string' &&
-          reply.includes('🔥 Promo')
-        ) {
-          return res.json({ reply: 'Mensaje bloqueado' });
+          if (endIdx < products.length) {
+            const verMasPayload = {
+              messaging_product: 'whatsapp',
+              to: cleanNumber,
+              type: 'interactive',
+              interactive: {
+                type: 'button',
+                body: { text: '¿Quieres ver más productos?' },
+                action: {
+                  buttons: [
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'VER_MAS_PRODUCTOS',
+                        title: 'Ver más'
+                      }
+                    }
+                  ]
+                }
+              }
+            };
+            await whatsappService.sendWhatsAppRawMessage(verMasPayload);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: 'Botón: Ver más productos',
+              step: user.step,
+              type: 'button',
+              extra: { payload: verMasPayload }
+            });
+            user.product_page += 1;
+            await updateConversation(cleanNumber, { state: user.step, context: { product_page: user.product_page } });
+            // Confirmar que la promo fue enviada por WhatsApp
+            if (promoSent) {
+              safeJson({ reply: 'Promo y productos enviados por WhatsApp.' });
+              return;
+            } else {
+              safeJson({ reply: 'Mostrando más productos...' });
+              return;
+            }
+          } else {
+            user.product_page = 0;
+            if (promoSent) {
+              safeJson({ reply: 'Promo y todos los productos enviados por WhatsApp.' });
+              return;
+            } else {
+              safeJson({ reply: 'Todos los productos enviados' });
+              return;
+            }
+          }
+        } else if (isVerMas) {
+          // Permitir ver más productos aunque no sea RESET_WORDS
+          if (!user.product_page) user.product_page = 0;
+          const pageSize = 4;
+          const startIdx = user.product_page * pageSize;
+          const endIdx = startIdx + pageSize;
+          const productsToSend = products.slice(startIdx, endIdx);
+          for (const p of productsToSend) {
+            await new Promise(r => setTimeout(r, 1500));
+            let caption = `${p.name}`;
+            if (p.variant) caption += `\nVariante: ${p.variant}`;
+            caption += `\nPrecio: $${p.price}`;
+            await whatsappService.sendWhatsAppImage(cleanNumber, p.image_url, caption);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: caption,
+              step: user.step,
+              type: 'image',
+              extra: { image_url: p.image_url }
+            });
+            await updateConversation(cleanNumber, { state: user.step, context: { last_product: p } });
+            await new Promise(r => setTimeout(r, 1500));
+            const buttonPayload = {
+              messaging_product: 'whatsapp',
+              to: cleanNumber,
+              type: 'interactive',
+              interactive: {
+                type: 'button',
+                body: { text: 'Quiero este 👆' },
+                action: {
+                  buttons: [
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: String(p.id),
+                        title: 'Agregar al carrito'
+                      }
+                    }
+                  ]
+                }
+              }
+            };
+            await whatsappService.sendWhatsAppRawMessage(buttonPayload);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: 'Botón: Agregar al carrito',
+              step: user.step,
+              type: 'button',
+              extra: { payload: buttonPayload }
+            });
+          }
+          if (endIdx < products.length) {
+            const verMasPayload = {
+              messaging_product: 'whatsapp',
+              to: cleanNumber,
+              type: 'interactive',
+              interactive: {
+                type: 'button',
+                body: { text: '¿Quieres ver más productos?' },
+                action: {
+                  buttons: [
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'VER_MAS_PRODUCTOS',
+                        title: 'Ver más'
+                      }
+                    }
+                  ]
+                }
+              }
+            };
+            await whatsappService.sendWhatsAppRawMessage(verMasPayload);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: 'Botón: Ver más productos',
+              step: user.step,
+              type: 'button',
+              extra: { payload: verMasPayload }
+            });
+            user.product_page += 1;
+            await updateConversation(cleanNumber, { state: user.step, context: { product_page: user.product_page } });
+            safeJson({ reply: 'Mostrando más productos...' });
+            return;
+          } else {
+            user.product_page = 0;
+            safeJson({ reply: 'Todos los productos enviados' });
+            return;
+          }
+        } else if (isProductId) {
+          // AGREGAR AL CARRITO: forzar step 'choosing' para asegurar procesamiento correcto
+          const { getUserState } = require('../services/cartService');
+          const user = getUserState(cleanNumber);
+          user.step = 'choosing';
+          await updateConversation(cleanNumber, { state: 'choosing', context: { cart: user.cart } });
+          // Actualiza conversación a checkout y guarda carrito
+          await updateConversation(cleanNumber, { state: 'checkout', context: { cart: user.cart } });
+          reply = handleUserMessage(cleanNumber, message);
+          console.log('REPLY:', reply, typeof reply);
+          if (!reply) {
+            safeSendStatus(200);
+            return;
+          }
+          // Log para depuración del objeto reply
+          console.log('[DEBUG][reply tipo y valor][isProductId]', typeof reply, JSON.stringify(reply));
+          if (typeof reply === 'object' && reply.generatePayment) {
+            // (opcional: lógica de pago inmediato si aplica)
+          } else if (typeof reply === 'object' && reply.showPaymentButton) {
+            // 1. Enviar mensaje resumen
+            await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: reply.text,
+              step: user.step,
+              type: 'text'
+            });
+            // 2. Enviar imágenes de los productos elegidos
+            for (const p of user.cart) {
+              await new Promise(r => setTimeout(r, 1200));
+              await whatsappService.sendWhatsAppImage(cleanNumber, p.image_url, '');
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: '',
+                step: user.step,
+                type: 'image',
+                extra: { image_url: p.image_url }
+              });
+            }
+            // 3. Esperar antes de enviar el mensaje de pago
+            await new Promise(r => setTimeout(r, 1500));
+            // 4. Generar el link de pago y enviar mensaje final
+            const sorted = [...user.cart].sort((a, b) => b.price - a.price);
+            const total = (sorted[0].price + sorted[1].price + sorted[2].price).toFixed(2);
+            const { createPaymentLink } = require('../services/mercadoPagoService');
+            const { createOrder } = require('../helpers/orders');
+            const { createScheduledTask } = require('../helpers/scheduledTasks');
+            const { ObjectId } = require('mongodb');
+            // Obtener usuario de la base de datos para tener el _id
+            const dbUser = await findUserByPhone(cleanNumber);
+            try {
+              const title = 'Combo 4x3 Relojes Curren';
+              const paymentLink = await createPaymentLink({ title, price: Number(total) });
+
+              // Crear la orden en la base de datos
+              const orderId = new ObjectId();
+              const order = {
+                _id: orderId,
+                user_id: dbUser?._id || cleanNumber,
+                products: user.cart.map(p => ({
+                  product_id: p.id,
+                  price: p.price,
+                  quantity: 1
+                })),
+                total: Number(total),
+                status: 'pending',
+                payment_link: paymentLink,
+                payment_expiration: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 días
+                created_at: new Date()
+              };
+              await createOrder(order);
+
+              // Crear la tarea programada de recordatorio
+              const scheduledTask = {
+                user_id: dbUser?._id || cleanNumber,
+                type: 'payment_reminder',
+                execute_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h después
+                status: 'pending',
+                metadata: { order_id: orderId },
+                created_at: new Date()
+              };
+              await createScheduledTask(scheduledTask);
+              await updateConversation(dbUser?._id || cleanNumber, { state: user.step, context: { cart: user.cart, order_id: orderId } });
+              // Mensaje de pago
+              const finalMsg =
+                '✔️ Envío rápido\n' +
+                '✔️ Pago seguro con Mercado Pago\n' +
+                '✔️ Garantía incluida\n\n' +
+                '🔥 Tu paquete ya está listo\n' +
+                'Paga aquí 👇\n' +
+                '💡 Puedes pagar con tarjeta o efectivo (OXXO)'+
+                '(Disponible por 3 días)\n' +
+                paymentLink;
+              await whatsappService.sendWhatsAppMessage(cleanNumber, finalMsg);
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: finalMsg,
+                step: user.step,
+                type: 'payment_link',
+                extra: { paymentLink }
+              });
+              // Resetear carrito solo después de enviar el link
+              const { resetCart } = require('../services/cartService');
+              resetCart(cleanNumber);
+              safeJson({ reply: finalMsg });
+              return; // Salir del flujo para no sobrescribir el estado
+            } catch (err) {
+              // LOG DETALLADO DEL ERROR DE MERCADO PAGO
+              console.error('[ERROR][createPaymentLink]', err && err.response ? err.response.data : err);
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: 'Error MercadoPago: ' + (err && err.message ? err.message : JSON.stringify(err)),
+                step: user.step,
+                type: 'error',
+                extra: { stack: err && err.stack ? err.stack : undefined, raw: err }
+              });
+              const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
+              await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: errMsg,
+                step: user.step,
+                type: 'text'
+              });
+              safeJson({ reply: errMsg });
+              return;
+            }
+          } else if (typeof reply === 'object' && reply.text) {
+            const resp = await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: reply.text,
+              step: user.step,
+              type: 'text'
+            });
+            console.log('WhatsApp API response:', resp);
+          } else if (typeof reply === 'string') {
+            const resp = await whatsappService.sendWhatsAppMessage(cleanNumber, reply);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: reply,
+              step: user.step,
+              type: 'text'
+            });
+            console.log('WhatsApp API response:', resp);
+          }
+          safeJson({ reply });
+          return;
         } else {
-          const msgToSend = typeof reply === 'object' ? reply.text : reply;
-          await whatsappService.sendWhatsAppMessage(cleanNumber, msgToSend);
-          logMessage({
-            user_id: cleanNumber,
-            role: 'bot',
-            message: msgToSend,
-            step: user.step,
-            type: 'text'
-          });
+          // ================= FLUJO NORMAL =================
+          reply = handleUserMessage(cleanNumber, message);
+          if (!reply) {
+            safeSendStatus(200);
+            return;
+          }
+          // Log para depuración del objeto reply
+          console.log('[DEBUG][reply tipo y valor]', typeof reply, JSON.stringify(reply));
+          // Si el reply es objeto con generatePayment, generar link de pago
+          if (typeof reply === 'object' && reply.generatePayment) {
+            const { getUserState } = require('../services/cartService');
+            const user = getUserState(cleanNumber);
+            // Calcular total (3 más caros)
+            const sorted = [...user.cart].sort((a, b) => b.price - a.price);
+            const total = sorted[0].price + sorted[1].price + sorted[2].price;
+            const { createPaymentLink } = require('../services/mercadoPagoService');
+            try {
+              const title = 'Combo 4x3 Relojes Curren';
+              const paymentLink = await createPaymentLink({ title, price: total });
+              const paymentMsg = `✔️ Envío rápido\n✔️ Pago seguro con Mercado Pago\n✔️ Garantía incluida\n\n🔥 Tu paquete ya quedó listo\n\nAquí está tu link 👇 tu link de pago: ${paymentLink}`;
+              await whatsappService.sendWhatsAppMessage(cleanNumber, paymentMsg);
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: paymentMsg,
+                step: user.step,
+                type: 'payment_link',
+                extra: { paymentLink }
+              });
+              // Resetear carrito solo después de enviar el link
+              const { resetCart } = require('../services/cartService');
+              resetCart(cleanNumber);
+              safeJson({ reply: paymentMsg });
+              return;
+            } catch (err) {
+              const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
+              await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: errMsg,
+                step: user.step,
+                type: 'text'
+              });
+              safeJson({ reply: errMsg });
+              return;
+            }
+          } else if (typeof reply === 'object' && reply.showPaymentButton) {
+            await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: reply.text,
+              step: user.step,
+              type: 'text'
+            });
+            // Esperar 1.5 segundos antes de enviar el botón interactivo
+            await new Promise(r => setTimeout(r, 1500));
+            console.log('[BOT] Enviando botón de pago interactivo...');
+            try {
+              const buttonPayload = {
+                messaging_product: 'whatsapp',
+                to: cleanNumber,
+                type: 'interactive',
+                interactive: {
+                  type: 'button',
+                  body: { text: '🔥 Tu paquete ya quedó listo\n\nTe dejo tu link de pago seguro aquí 👇\n(Disponible por 3 días)' },
+                  action: {
+                    buttons: [
+                      {
+                        type: 'reply',
+                        reply: {
+                          id: 'GENERAR_LINK_PAGO',
+                          title: 'Generar link de pago'
+                        }
+                      }
+                    ]
+                  }
+                }
+              };
+              const respButton = await whatsappService.sendWhatsAppRawMessage(buttonPayload);
+              logMessage({
+                user_id: cleanNumber,
+                role: 'bot',
+                message: 'Botón: Generar link de pago',
+                step: user.step,
+                type: 'button',
+                extra: { payload: buttonPayload }
+              });
+            } catch (err) {
+              console.error('[ERROR][sendWhatsAppRawMessage] Pago:', err);
+            }
+            console.log('[BOT] Botón de pago enviado (o intento realizado).');
+            safeJson({ reply: reply.text });
+            return;
+          } else if (
+            typeof reply === 'string' &&
+            reply.includes('🔥 Promo')
+          ) {
+            safeJson({ reply: 'Mensaje bloqueado' });
+            return;
+          } else {
+            const msgToSend = typeof reply === 'object' ? reply.text : reply;
+            await whatsappService.sendWhatsAppMessage(cleanNumber, msgToSend);
+            logMessage({
+              user_id: cleanNumber,
+              role: 'bot',
+              message: msgToSend,
+              step: user.step,
+              type: 'text'
+            });
+          }
         }
+      } 
+      // ================= LOCAL =================
+      else {
+        reply = handleUserMessage(user_id, message);
       }
 
-    } 
-    // ================= LOCAL =================
-    else {
-      reply = handleUserMessage(user_id, message);
+      safeJson({ reply });
+
+    } catch (e) {
+      console.error('ERROR:', e);
+      safeSendStatus(500);
     }
-
-    res.json({ reply });
-
-  } catch (e) {
-    console.error('ERROR:', e);
-    res.status(500).json({ error: e.message });
-  }
-});
+  }); // End of setImmediate
+}); // End of router.post('/universal-webhook')
 
 // ================= VERIFY TOKEN =================
 router.get('/universal-webhook', (req, res) => {
