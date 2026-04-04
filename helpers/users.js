@@ -36,18 +36,45 @@ async function createUser({ phone, name = '', source = 'whatsapp', tags = [], st
 // Actualiza la última interacción y status
 async function updateUserInteraction(phone, status = null) {
   const db = await connectDB();
-  const update = { $set: { last_interaction: new Date() } };
-  if (status) update.$set.status = status;
-  await db.collection('users').updateOne({ phone }, update);
+  // Si es lead, pasa a prospecto
+  await db.collection('users').updateOne(
+    { phone, status: 'lead' },
+    { $set: { last_interaction: new Date(), status: 'prospecto' } }
+  );
+  // Si no era lead, solo actualiza interacción
+  await db.collection('users').updateOne(
+    { phone, status: { $ne: 'lead' } },
+    { $set: { last_interaction: new Date() } }
+  );
+  // Si se pasa un status explícito, lo actualiza
+  if (status) {
+    await db.collection('users').updateOne(
+      { phone },
+      { $set: { status } }
+    );
+  }
 }
 
 // Actualiza métricas del usuario
 async function updateUserMetrics(phone, { total_orders, total_spent, last_order_date }) {
   const db = await connectDB();
-  await db.collection('users').updateOne(
-    { phone },
-    { $set: { 'metrics.total_orders': total_orders, 'metrics.total_spent': total_spent, 'metrics.last_order_date': last_order_date } }
-  );
+    // Si es la primera orden, pasa a cliente
+    if (total_orders === 1) {
+      await db.collection('users').updateOne(
+        { phone },
+        { $set: { 'metrics.total_orders': total_orders, 'metrics.total_spent': total_spent, 'metrics.last_order_date': last_order_date, status: 'cliente' } }
+      );
+    } else if (total_orders > 1) {
+      await db.collection('users').updateOne(
+        { phone },
+        { $set: { 'metrics.total_orders': total_orders, 'metrics.total_spent': total_spent, 'metrics.last_order_date': last_order_date, status: 'recurrente' } }
+      );
+    } else {
+      await db.collection('users').updateOne(
+        { phone },
+        { $set: { 'metrics.total_orders': total_orders, 'metrics.total_spent': total_spent, 'metrics.last_order_date': last_order_date } }
+      );
+    }
 }
 
 module.exports = {

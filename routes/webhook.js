@@ -118,11 +118,53 @@ router.post('/universal-webhook', (req, res) => {
         await updateUserInteraction(user_id);
         // Conversación
         let conversation = await findConversationByUser(user_id);
+        let newState = '1-inicio';
+        let newContext = {};
+        // Detectar estado según el flujo
+        if (msg.text?.body) {
+          const txt = msg.text.body.trim().toLowerCase();
+          if (["hi","hola","inicio","start","reiniciar"].includes(txt)) {
+            newState = 'inicio';
+          }
+        }
+        // Si el usuario presionó el botón de ver más productos al menos una vez
+        if (msg.interactive && msg.interactive.type === 'button_reply') {
+          if (msg.interactive.button_reply.id === 'VER_MAS_PRODUCTOS') {
+            newState = 'viendo_catalogo';
+          }
+          // Si presionó 'Agregar al carrito' (id numérico)
+          if (!isNaN(parseInt(msg.interactive.button_reply.id))) {
+            newState = 'producto_seleccionado';
+          }
+        }
+        // Si hay carrito, producto seleccionado, etc
+        const { getUserState } = require('../services/cartService');
+        const userState = getUserState(user_id);
+        if (userState && userState.cart && userState.cart.length > 0) {
+          newContext.cart = userState.cart.map(p => ({ product_id: p.id, quantity: 1 }));
+          if (userState.cart.length >= 4) {
+            newState = 'esperando_pago';
+          } else {
+            newState = 'producto_seleccionado';
+          }
+        }
+        // Si hay orden
+        const { findOrderByUser } = require('../helpers/orders');
+        const lastOrder = await findOrderByUser ? await findOrderByUser(user._id) : null;
+        if (lastOrder) {
+          newContext.order_id = lastOrder._id;
+          // Si la orden está pendiente y tiene un link de pago, forzar esperando_pago
+          if (lastOrder.status === 'pending' && lastOrder.payment_link) newState = 'esperando_pago';
+          if (lastOrder.status === 'paid') newState = 'pagado';
+        }
+        // Última opción
+        if (msg.interactive && msg.interactive.type === 'button_reply') {
+          newContext.last_option = msg.interactive.button_reply.id;
+        }
         if (!conversation) {
-          // user es el documento de users, así que usamos su _id y phone
-          conversation = await createConversation({ user_id: user._id, phone: user.phone, state: 'start', context: {} });
+          conversation = await createConversation({ user_id: user._id, phone: user.phone, state: newState, context: newContext });
         } else {
-          await updateConversation(user._id, { state: 'start', context: {} });
+          await updateConversation(user._id, { state: newState, context: newContext });
         }
 
         if (msg.interactive && msg.interactive.type === 'button_reply') {
@@ -189,15 +231,24 @@ router.post('/universal-webhook', (req, res) => {
 
         // Buscar conversación actual
         let currentConversation = await findConversationByUser(cleanNumber);
+        // BLOQUEO TOTAL DE FLUJO DE PRODUCTOS/CARRITO SI ESTÁ EN esperando_pago
+        if (currentConversation && currentConversation.state === 'esperando_pago') {
+          safeJson({ reply: '🚨 Ya tienes tu paquete listo y solo falta tu pago. Si necesitas el link de pago, responde "link" o revisa tu último mensaje. Para empezar de nuevo, escribe "inicio".' });
+          return;
+        }
         // Si el usuario está en checkout, ignorar mensajes de producto
         if (currentConversation && currentConversation.state === 'checkout' && !isFlujoInicial && !isVerMas) {
-          // Opcional: puedes enviar un mensaje informativo aquí
           safeJson({ reply: 'Ya tienes un pedido pendiente de pago. Revisa tu link o escribe "inicio" para empezar de nuevo.' });
           return;
         }
 
         const isProductId = !isNaN(prodId) && products.some(p => p.id === prodId);
 
+        // BLOQUEO EXTRA: Si por alguna razón el flujo cae aquí y el usuario está en esperando_pago, no enviar imágenes ni productos
+        if (currentConversation && currentConversation.state === 'esperando_pago') {
+          safeJson({ reply: '🚨 Ya tienes tu paquete listo y solo falta tu pago. Si necesitas el link de pago, responde "link" o revisa tu último mensaje. Para empezar de nuevo, escribe "inicio".' });
+          return;
+        }
         if (isFlujoInicial) {
           if (!user.product_page) user.product_page = 0;
           const pageSize = 4;
@@ -408,6 +459,11 @@ router.post('/universal-webhook', (req, res) => {
             return;
           }
         } else if (isProductId) {
+          // BLOQUEO: Si el usuario está en esperando_pago, no permitir agregar productos ni enviar imágenes
+          if (currentConversation && currentConversation.state === 'esperando_pago') {
+            safeJson({ reply: '🚨 Ya tienes tu paquete listo y solo falta tu pago. Si necesitas el link de pago, responde "link" o revisa tu último mensaje. Para empezar de nuevo, escribe "inicio".' });
+            return;
+          }
           // AGREGAR AL CARRITO: forzar step 'choosing' para asegurar procesamiento correcto
           const { getUserState } = require('../services/cartService');
           const user = getUserState(cleanNumber);
@@ -426,25 +482,13 @@ router.post('/universal-webhook', (req, res) => {
           if (typeof reply === 'object' && reply.generatePayment) {
             // (opcional: lógica de pago inmediato si aplica)
           } else if (typeof reply === 'object' && reply.showPaymentButton) {
-            // Si el carrito tiene 4 productos, forzar resumen y link de pago aunque el reply no tenga showPaymentButton
-            // if (user.cart && user.cart.length === 4) {
-            //   // Construir resumen de productos
-            //   let resumen = '🛒 Resumen de tu selección:\n';
-            //   user.cart.forEach((p, idx) => {
-            //     resumen += `${idx + 1}. ${p.name}`;
-            //     if (p.variant) resumen += ` (${p.variant})`;
-            //     resumen += ` - $${p.price}\n`;
-            //   });
-            //   resumen += '\n¡Ya tienes tus 4 relojes! Ahora te generamos tu link de pago.';
-            //   await whatsappService.sendWhatsAppMessage(cleanNumber, resumen);
-            //   logMessage({
-            //     user_id: cleanNumber,
-            //     role: 'bot',
-            //     message: resumen,
-            //     step: user.step,
-            //     type: 'text'
-            //   });
-            // }
+            // BLOQUEO ABSOLUTO: Si el usuario ya está en esperando_pago, no enviar resumen, imágenes ni mensaje de pago
+            let dbUser = await findUserByPhone(cleanNumber);
+            const currentConv = await findConversationByUser(dbUser?._id || cleanNumber);
+            if (currentConv && currentConv.state === 'esperando_pago') {
+              safeJson({ reply: '🚨 Ya tienes tu paquete listo y solo falta tu pago. Si necesitas el link de pago, responde "link" o revisa tu último mensaje. Para empezar de nuevo, escribe "inicio".' });
+              return;
+            }
             // 1. Enviar mensaje resumen
             await whatsappService.sendWhatsAppMessage(cleanNumber, reply.text);
             logMessage({
@@ -482,8 +526,6 @@ router.post('/universal-webhook', (req, res) => {
 
               // Crear la orden en la base de datos
               const orderId = new ObjectId();
-              // Buscar el usuario en la base para obtener su _id
-              let dbUser = await findUserByPhone(cleanNumber);
               const order = {
                 _id: orderId,
                 user_id: dbUser?._id || cleanNumber,
@@ -511,6 +553,10 @@ router.post('/universal-webhook', (req, res) => {
               };
               await createScheduledTask(scheduledTask);
 
+              // Forzar estado esperando_pago en la conversación y en memoria ANTES de enviar imágenes
+              user.step = 'esperando_pago';
+              await updateConversation(dbUser?._id || cleanNumber, { state: 'esperando_pago', context: { cart: user.cart, order_id: orderId } });
+              // Mensaje de pago
               const finalMsg =
                 '✔️ Envío rápido\n' +
                 '✔️ Pago seguro con Mercado Pago\n' +
@@ -533,7 +579,7 @@ router.post('/universal-webhook', (req, res) => {
               const { resetCart } = require('../services/cartService');
               resetCart(cleanNumber);
               safeJson({ reply: finalMsg });
-              return;
+              return; // Salir del flujo para no sobrescribir el estado
             } catch (err) {
               const errMsg = 'Ocurrió un error generando el link de pago. Intenta más tarde.';
               await whatsappService.sendWhatsAppMessage(cleanNumber, errMsg);
