@@ -79,12 +79,11 @@ El bot utiliza MongoDB para persistencia de usuarios, conversaciones y órdenes.
 
 ## Taxonomía de estados conversacionales
 
-- `1-inicio`: Usuario inicia o reinicia el flujo.
-- `2-viendo_catalogo`: Navegando productos.
-- `3-producto_seleccionado`: Seleccionando/agregando productos al carrito.
-- `4-esperando_pago`: Carrito lleno, esperando pago. (Bloquea acciones de producto/cart)
-- `5-pagado`: Pedido pagado.
+- `inicio`: Usuario inicia o reinicia el flujo.
+- `viendo_catalogo`: Navegando productos.
+- `producto_seleccionado`: Seleccionando/agregando productos al carrito.
 - `checkout`: Estado intermedio antes de pago.
+- `pagado`: Pedido pagado.
 - `text`: Mensaje libre o sin contexto relevante.
 
 > El estado y contexto se actualizan automáticamente y bloquean duplicados o flujos inconsistentes.
