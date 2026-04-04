@@ -1,0 +1,2124 @@
+[
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 PROMO 4x3 por tiempo limitado\n\nTe llevas 4 relojes y uno va GRATIS\n\n👇 Elige el primero",
+    "step": "start",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T17:52:44.487Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8106 análogo - plateado\nPrecio: $621.05",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/06/blackpn3.jpg"
+    },
+    "timestamp": "2026-04-04T17:52:46.109Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9903",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:52:47.820Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8458 análogo - plateado\nPrecio: $621",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8458pg.jpg"
+    },
+    "timestamp": "2026-04-04T17:52:49.495Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9887",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:52:51.227Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8459 análogo - plateado azul\nPrecio: $723.93",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8459pa.jpg"
+    },
+    "timestamp": "2026-04-04T17:52:52.806Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "8353",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:52:54.482Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8461 análogo - plateado\nPrecio: $763.96",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8461p1.png"
+    },
+    "timestamp": "2026-04-04T17:52:56.070Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9882",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:52:57.737Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 PROMO 4x3 por tiempo limitado\n\nTe llevas 4 relojes y uno va GRATIS\n\n👇 Elige el primero",
+    "step": "start",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T17:54:03.788Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8106 análogo - plateado\nPrecio: $621.05",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/06/blackpn3.jpg"
+    },
+    "timestamp": "2026-04-04T17:54:05.889Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9903",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:54:08.022Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8458 análogo - plateado\nPrecio: $621",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8458pg.jpg"
+    },
+    "timestamp": "2026-04-04T17:54:10.040Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9887",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:54:12.213Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8459 análogo - plateado azul\nPrecio: $723.93",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8459pa.jpg"
+    },
+    "timestamp": "2026-04-04T17:54:14.194Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "8353",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:54:16.282Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8461 análogo - plateado\nPrecio: $763.96",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8461p1.png"
+    },
+    "timestamp": "2026-04-04T17:54:18.317Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9882",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:54:20.612Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9882",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T17:54:54.377Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9887",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T17:55:06.434Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 PROMO 4x3 por tiempo limitado\n\nTe llevas 4 relojes y uno va GRATIS\n\n👇 Elige el primero",
+    "step": "start",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T17:58:54.360Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8106 análogo - plateado\nPrecio: $621.05",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/06/blackpn3.jpg"
+    },
+    "timestamp": "2026-04-04T17:58:56.331Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9903",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:58:58.471Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8458 análogo - plateado\nPrecio: $621",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8458pg.jpg"
+    },
+    "timestamp": "2026-04-04T17:59:00.600Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9887",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:59:02.742Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8459 análogo - plateado azul\nPrecio: $723.93",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8459pa.jpg"
+    },
+    "timestamp": "2026-04-04T17:59:04.762Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "8353",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:59:06.907Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8461 análogo - plateado\nPrecio: $763.96",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8461p1.png"
+    },
+    "timestamp": "2026-04-04T17:59:08.896Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9882",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:59:11.011Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T17:59:11.558Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 PROMO 4x3 por tiempo limitado\n\nTe llevas 4 relojes y uno va GRATIS\n\n👇 Elige el primero",
+    "step": "start",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:02:54.794Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8106 análogo - plateado\nPrecio: $621.05",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/06/blackpn3.jpg"
+    },
+    "timestamp": "2026-04-04T18:02:56.827Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9903",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:02:59.299Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8458 análogo - plateado\nPrecio: $621",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8458pg.jpg"
+    },
+    "timestamp": "2026-04-04T18:03:01.589Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9887",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:03:03.695Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8459 análogo - plateado azul\nPrecio: $723.93",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/04/8459pa.jpg"
+    },
+    "timestamp": "2026-04-04T18:03:05.749Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "8353",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:03:07.896Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8461 análogo - plateado\nPrecio: $763.96",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8461p1.png"
+    },
+    "timestamp": "2026-04-04T18:03:09.880Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9882",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:03:12.036Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:03:13.353Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "VER_MAS_PRODUCTOS",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:04:27.711Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8464 análogo - blanco negro\nPrecio: $781.18",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/05/8464nd1.jpg"
+    },
+    "timestamp": "2026-04-04T18:04:30.091Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9863",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:04:32.197Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8464 análogo - negro plateado\nPrecio: $792.4",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/8464p1.png"
+    },
+    "timestamp": "2026-04-04T18:04:34.226Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9862",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:04:36.423Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8477 análogo - azul dorado\nPrecio: $666.68",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-54.png"
+    },
+    "timestamp": "2026-04-04T18:04:38.377Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9873",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:04:40.680Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8477 análogo - blanco dorado\nPrecio: $666.68",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-51.png"
+    },
+    "timestamp": "2026-04-04T18:04:42.664Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9874",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:04:44.748Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:04:45.212Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "VER_MAS_PRODUCTOS",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:04:57.577Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8477 análogo - negro dorado\nPrecio: $666.68",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-57.png"
+    },
+    "timestamp": "2026-04-04T18:04:59.870Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9875",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:01.953Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 8477 análogo - negro plateado\nPrecio: $643.86",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-48.png"
+    },
+    "timestamp": "2026-04-04T18:05:04.412Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9876",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:06.482Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9016 análogo - plateado\nPrecio: $621.29",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2020/03/firep.jpg"
+    },
+    "timestamp": "2026-04-04T18:05:08.568Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9798",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:11.620Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9046 análogo - dorado 🔥👐\nPrecio: $630.46",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/01/9046d1.jpg"
+    },
+    "timestamp": "2026-04-04T18:05:13.744Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "8090",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:15.905Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:16.452Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "VER_MAS_PRODUCTOS",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:05:21.055Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9054 análogo - plateado\nPrecio: $642.26",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/01/9054p.jpg"
+    },
+    "timestamp": "2026-04-04T18:05:23.453Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "8009",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:25.522Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9089 análogo - blanco - plateado\nPrecio: $575.6",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/01/9089p.jpg"
+    },
+    "timestamp": "2026-04-04T18:05:27.591Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9808",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:29.722Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9096 análogo - azul rosa\nPrecio: $438",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/08/9096ra2.jpeg"
+    },
+    "timestamp": "2026-04-04T18:05:31.735Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9957",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:33.894Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9096 análogo - negro plateado\nPrecio: $438",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/08/9096pn2.jpg"
+    },
+    "timestamp": "2026-04-04T18:05:35.946Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9956",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:40.436Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:43.610Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "VER_MAS_PRODUCTOS",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:05:47.715Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9096 análogo - plateado blanco\nPrecio: $438",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2024/08/9096a3-1.jpg"
+    },
+    "timestamp": "2026-04-04T18:05:49.995Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9826",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:52.118Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9101 análogo - blanco plateado\nPrecio: $672.3",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-77.png"
+    },
+    "timestamp": "2026-04-04T18:05:54.199Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9955",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:05:56.303Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9101 análogo - negro dorado\nPrecio: $643.86",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-80.png"
+    },
+    "timestamp": "2026-04-04T18:05:58.336Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9954",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:00.559Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9101 análogo - plateado negro\nPrecio: $438",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-80.png"
+    },
+    "timestamp": "2026-04-04T18:06:02.534Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9958",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:04.705Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:05.627Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "VER_MAS_PRODUCTOS",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:06:15.201Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9102 análogo - azul dorado\nPrecio: $689.5",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-99.png"
+    },
+    "timestamp": "2026-04-04T18:06:17.395Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9834",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:19.486Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9102 análogo - blanco dorado\nPrecio: $689.5",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-96.png"
+    },
+    "timestamp": "2026-04-04T18:06:21.644Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9835",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:23.816Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9102 análogo - dorado negro\nPrecio: $655.48",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-102.png"
+    },
+    "timestamp": "2026-04-04T18:06:25.801Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9837",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:28.038Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9102 análogo - plateado azul\nPrecio: $655.48",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/Diseno-sin-titulo-5.png"
+    },
+    "timestamp": "2026-04-04T18:06:30.014Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9840",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:32.127Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Ver más productos",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "¿Quieres ver más productos?"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "VER_MAS_PRODUCTOS",
+                  "title": "Ver más"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:32.703Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "VER_MAS_PRODUCTOS",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:06:39.189Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Reloj curren 9102 análogo - plateado negro\nPrecio: $689.5",
+    "step": "start",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-93.png"
+    },
+    "timestamp": "2026-04-04T18:06:41.616Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Botón: Agregar al carrito",
+    "step": "start",
+    "type": "button",
+    "extra": {
+      "payload": {
+        "messaging_product": "whatsapp",
+        "to": "525536609217",
+        "type": "interactive",
+        "interactive": {
+          "type": "button",
+          "body": {
+            "text": "Quiero este 👆"
+          },
+          "action": {
+            "buttons": [
+              {
+                "type": "reply",
+                "reply": {
+                  "id": "9841",
+                  "title": "Agregar al carrito"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "timestamp": "2026-04-04T18:06:43.749Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9841",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:30.047Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9841",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:30.515Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Llevas 1 de 4 👌\n\nElige tu siguiente reloj 🫡",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:30.519Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "Llevas 1 de 4 👌\n\nElige tu siguiente reloj 🫡",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:31.868Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9837",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:36.562Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9837",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:37.211Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 Ya tienes 2 relojes apartados\nTe faltan 2 para llevarte UNO GRATIS\n\nElige tu siguiente reloj 🫡",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:37.214Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 Ya tienes 2 relojes apartados\nTe faltan 2 para llevarte UNO GRATIS\n\nElige tu siguiente reloj 🫡",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:37.829Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9835",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:41.892Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9835",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:42.273Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🚨 Ya casi es tuyo el GRATIS\nSolo elige 1 más y te lo regalamos\n\nElige tu siguiente reloj 🫡",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:42.276Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🚨 Ya casi es tuyo el GRATIS\nSolo elige 1 más y te lo regalamos\n\nElige tu siguiente reloj 🫡",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:42.848Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9834",
+    "step": "button_reply",
+    "type": "button",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:49.117Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "user",
+    "message": "9834",
+    "step": "choosing",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:49.494Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "{\"text\":\"🔥 Este es tu paquete listo:\\n\\n✔️ Modelo Reloj curren 9102 análogo - plateado negro\\n✔️ Modelo Reloj curren 9102 análogo - dorado negro\\n✔️ Modelo Reloj curren 9102 análogo - blanco dorado\\n✔️ Modelo Reloj curren 9102 análogo - azul dorado\\n\\n💰 Total con promo aplicada: $2068.50\\n🎁 Incluye 1 reloj GRATIS\",\"showPaymentButton\":true}",
+    "step": "checkout",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:49.498Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "🔥 Este es tu paquete listo:\n\n✔️ Modelo Reloj curren 9102 análogo - plateado negro\n✔️ Modelo Reloj curren 9102 análogo - dorado negro\n✔️ Modelo Reloj curren 9102 análogo - blanco dorado\n✔️ Modelo Reloj curren 9102 análogo - azul dorado\n\n💰 Total con promo aplicada: $2068.50\n🎁 Incluye 1 reloj GRATIS",
+    "step": "checkout",
+    "type": "text",
+    "extra": {},
+    "timestamp": "2026-04-04T18:07:50.151Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "",
+    "step": "checkout",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-93.png"
+    },
+    "timestamp": "2026-04-04T18:07:51.961Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "",
+    "step": "checkout",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-102.png"
+    },
+    "timestamp": "2026-04-04T18:07:53.786Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "",
+    "step": "checkout",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-96.png"
+    },
+    "timestamp": "2026-04-04T18:07:55.567Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "",
+    "step": "checkout",
+    "type": "image",
+    "extra": {
+      "image_url": "https://www.relojescurrenmexico.com.mx/wp-content/uploads/2025/06/foto_no_exif-99.png"
+    },
+    "timestamp": "2026-04-04T18:07:57.385Z"
+  },
+  {
+    "user_id": "525536609217",
+    "role": "bot",
+    "message": "✔️ Envío rápido\n✔️ Pago seguro con Mercado Pago\n✔️ Garantía incluida\n\n🔥 Tu paquete ya está listo\nPaga aquí 👇\n💡 Puedes pagar con tarjeta o efectivo (OXXO)(Disponible por 3 días)\nhttps://www.mercadopago.com.mx/checkout/v1/redirect?pref_id=509288912-356eed03-4995-42da-9986-914a8e9741b7",
+    "step": "checkout",
+    "type": "payment_link",
+    "extra": {
+      "paymentLink": "https://www.mercadopago.com.mx/checkout/v1/redirect?pref_id=509288912-356eed03-4995-42da-9986-914a8e9741b7"
+    },
+    "timestamp": "2026-04-04T18:08:00.668Z"
+  }
+]
