@@ -8,16 +8,7 @@ const { isDuplicateMessage, markMessageProcessed } = require('../helpers/idempot
 const { findConversationByUser, createConversation, updateConversation } = require('../helpers/conversations');
 
 // ================= HELPERS =================
-function normalizeNumber(number) {
-  return number.replace(/\D/g, '');
-}
-
-function fixMexicanNumber(number) {
-  if (number.startsWith('521')) {
-    return '52' + number.slice(3);
-  }
-  return number;
-}
+// 🔒 REGLA DE ORO: Nunca modifiques el wa_id ni el from. Usa siempre tal cual viene de WhatsApp.
 
 // ================= WEBHOOK SIMPLE =================
 router.post('/webhook', (req, res) => {
@@ -210,13 +201,10 @@ router.post('/universal-webhook', (req, res) => {
       console.log('[WEBHOOK] Dispatching flow for user:', user_id, '| message:', message && message.substring(0, 60));
 
       let reply = null;
-      let cleanNumber = null;
 
       // --- Indentación clara: todo el flujo principal dentro de este bloque ---
       if (req.body.entry) {
-        cleanNumber = normalizeNumber(user_id);
-        cleanNumber = fixMexicanNumber(cleanNumber);
-
+        const cleanNumber = user_id;
         console.log('[WEBHOOK] 📤 Sending to:', cleanNumber);
 
         const { getUserState } = require('../services/cartService');
