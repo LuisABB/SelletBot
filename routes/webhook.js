@@ -110,7 +110,12 @@ router.post('/universal-webhook', (req, res) => {
         const msg = entry.messages[0];
         // Usar SIEMPRE el wa_id original
         user_id = msg.from;
-        console.log('[WEBHOOK] Processing message from user:', user_id, '| type:', msg.type);
+        console.log('[WEBHOOK] --- NUEVO MENSAJE ---');
+        console.log('[WEBHOOK] wa_id recibido:', user_id);
+        console.log('[WEBHOOK] Mensaje recibido:', msg.text?.body || msg.interactive?.button_reply?.id || '[no text]');
+        // El número al que se responderá será user_id
+        console.log('[WEBHOOK] Se responderá a este wa_id:', user_id);
+        console.log('[WEBHOOK] Tipo de mensaje:', msg.type);
 
         // Buscar o crear usuario en la base
         console.log('[WEBHOOK] Looking up user in DB…');
