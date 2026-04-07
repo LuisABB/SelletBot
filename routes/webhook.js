@@ -56,6 +56,10 @@ router.post('/whatsapp-webhook', async (req, res) => {
 });
 
 // ================= UNIVERSAL WEBHOOK =================
+// Maximum time (ms) the background async processing is allowed to run before
+// it is forcibly aborted and an error is logged.
+const WEBHOOK_PROCESSING_TIMEOUT_MS = 30000;
+
 router.post('/universal-webhook', (req, res) => {
   // Logging de entrada
   console.log('🔥 WEBHOOK HIT');
@@ -65,30 +69,52 @@ router.post('/universal-webhook', (req, res) => {
   res.sendStatus(200);
 
   // Procesar el resto de la lógica de forma asíncrona
-  setImmediate(async () => {
-    try {
+  setImmediate(() => {
+    // Wrap the entire async processing in a race against a hard timeout so
+    // that a hanging DB call, API call, or any other await never silently
+    // stalls the Node.js event loop indefinitely.
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`[TIMEOUT] Webhook processing exceeded ${WEBHOOK_PROCESSING_TIMEOUT_MS}ms`));
+      }, WEBHOOK_PROCESSING_TIMEOUT_MS);
+    });
+
+    const processingPromise = (async () => {
+      console.log('[WEBHOOK] Starting async processing…');
+
       // Extraer messageId de WhatsApp
       const messageId = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0]?.id;
-      if (!messageId) return;
+      if (!messageId) {
+        console.log('[WEBHOOK] No messageId found — skipping (likely a status update).');
+        return;
+      }
 
       // Idempotencia
+      console.log('[WEBHOOK] Checking idempotency for messageId:', messageId);
       if (await isDuplicateMessage(messageId)) {
-        console.log('Mensaje duplicado, ignorando:', messageId);
+        console.log('[WEBHOOK] Duplicate message — ignoring:', messageId);
         return;
       }
       await markMessageProcessed(messageId);
+      console.log('[WEBHOOK] Message marked as processed:', messageId);
 
       // --- Lógica original del webhook ---
       let user_id, message;
 
       if (req.body.entry && req.body.entry[0]?.changes) {
         const entry = req.body.entry[0].changes[0].value;
-        if (!entry.messages || !entry.messages[0]) return;
+        if (!entry.messages || !entry.messages[0]) {
+          console.log('[WEBHOOK] No messages array in entry — skipping.');
+          return;
+        }
         const msg = entry.messages[0];
         let raw_user_id = msg.from;
         let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
         user_id = normalized_user_id;
+        console.log('[WEBHOOK] Processing message from user:', user_id, '| type:', msg.type);
+
         // Buscar o crear usuario en la base
+        console.log('[WEBHOOK] Looking up user in DB…');
         let user = await findUserByPhone(user_id);
         if (!user) {
           // Obtener nombre del perfil desde contacts si viene en el mensaje
@@ -96,12 +122,19 @@ router.post('/universal-webhook', (req, res) => {
           if (entry.contacts && entry.contacts[0] && entry.contacts[0].profile && entry.contacts[0].profile.name) {
             profileName = entry.contacts[0].profile.name;
           }
+          console.log('[WEBHOOK] User not found — creating new user, name:', profileName);
           user = await createUser({ phone: user_id, name: profileName });
+          console.log('[WEBHOOK] New user created:', user && user._id);
+        } else {
+          console.log('[WEBHOOK] Existing user found:', user._id);
         }
         // Actualizar última interacción
+        console.log('[WEBHOOK] Updating last interaction…');
         await updateUserInteraction(user_id);
         // Conversación
+        console.log('[WEBHOOK] Looking up conversation…');
         let conversation = await findConversationByUser(user_id);
+        console.log('[WEBHOOK] Conversation found:', !!conversation, '| current state:', conversation && conversation.state);
         let newState = '1-inicio';
         let newContext = {};
         // Detectar estado según el flujo
@@ -125,8 +158,10 @@ router.post('/universal-webhook', (req, res) => {
           newContext.cart = userState.cart.map(p => ({ product_id: p.id, quantity: 1 }));
           newState = 'producto_seleccionado';
         }
+        console.log('[WEBHOOK] Looking up last order for user:', user._id);
         const { findOrderByUser } = require('../helpers/orders');
         const lastOrder = await findOrderByUser ? await findOrderByUser(user._id) : null;
+        console.log('[WEBHOOK] Last order found:', !!lastOrder, '| status:', lastOrder && lastOrder.status);
         if (lastOrder) {
           newContext.order_id = lastOrder._id;
           if (lastOrder.status === 'paid') newState = 'pagado';
@@ -135,11 +170,13 @@ router.post('/universal-webhook', (req, res) => {
         if (msg.interactive && msg.interactive.type === 'button_reply') {
           newContext.last_option = msg.interactive.button_reply.id;
         }
+        console.log('[WEBHOOK] Upserting conversation with state:', newState);
         if (!conversation) {
           conversation = await createConversation({ user_id: user._id, phone: user.phone, state: newState, context: newContext });
         } else {
           await updateConversation(user._id, { state: newState, context: newContext });
         }
+        console.log('[WEBHOOK] Conversation upserted.');
 
         if (msg.interactive && msg.interactive.type === 'button_reply') {
           // Actualizar status a 'prospecto' al presionar el primer botón
@@ -161,7 +198,12 @@ router.post('/universal-webhook', (req, res) => {
         }
       }
 
-      if (!user_id || !message) return;
+      if (!user_id || !message) {
+        console.log('[WEBHOOK] user_id or message is empty — aborting.', { user_id, message });
+        return;
+      }
+
+      console.log('[WEBHOOK] Dispatching flow for user:', user_id, '| message:', message && message.substring(0, 60));
 
       let reply = null;
       let cleanNumber = null;
@@ -171,7 +213,7 @@ router.post('/universal-webhook', (req, res) => {
         cleanNumber = normalizeNumber(user_id);
         cleanNumber = fixMexicanNumber(cleanNumber);
 
-        console.log('📤 Enviando a:', cleanNumber);
+        console.log('[WEBHOOK] 📤 Sending to:', cleanNumber);
 
         const { getUserState } = require('../services/cartService');
         let products = require('../services/products');
@@ -188,6 +230,7 @@ router.post('/universal-webhook', (req, res) => {
         });
 
         const user = getUserState(cleanNumber);
+        console.log('[WEBHOOK] In-memory user state:', JSON.stringify({ step: user && user.step, cart_count: user && user.cart_count, flujo_inicial_enviado: user && user.flujo_inicial_enviado }));
 
         const RESET_WORDS = ['hi', 'hola', 'inicio', 'start', 'reiniciar'];
         const normalizedMsg = message.trim().toLowerCase();
@@ -205,15 +248,19 @@ router.post('/universal-webhook', (req, res) => {
         const prodId = parseInt(message.trim());
 
         // Buscar conversación actual
+        console.log('[WEBHOOK] Re-fetching current conversation for checkout guard…');
         let currentConversation = await findConversationByUser(cleanNumber);
-        // ...existing code...
+        console.log('[WEBHOOK] isFlujoInicial:', isFlujoInicial, '| isVerMas:', isVerMas, '| prodId:', prodId, '| conversation state:', currentConversation && currentConversation.state);
         // Si el usuario está en checkout, ignorar mensajes de producto
         if (currentConversation && currentConversation.state === 'checkout' && !isFlujoInicial && !isVerMas) {
-          await whatsappService.sendWhatsAppMessage(cleanNumber, 'Ya tienes un pedido pendiente de pago. Revisa tu link o escribe "inicio" para empezar de nuevo.');
+          console.log('[WEBHOOK] User is in checkout — sending reminder and aborting.');
+          await whatsappService.sendWhatsAppMessage(cleanNumber, 'Ya tienes un pedido pendiente de pago. Revisa tu link o escribe \"inicio\" para empezar de nuevo.');
           return;
         }
 
+
         const isProductId = !isNaN(prodId) && products.some(p => p.id === prodId);
+        console.log('[WEBHOOK] isProductId:', isProductId, '| Branch entering:', isFlujoInicial ? 'isFlujoInicial' : isVerMas ? 'isVerMas' : isProductId ? 'isProductId' : 'normal flow');
 
         if (isFlujoInicial) {
           if (!user.product_page) user.product_page = 0;
@@ -678,8 +725,12 @@ router.post('/universal-webhook', (req, res) => {
       else {
         reply = handleUserMessage(user_id, message);
       }
-    }  catch (e) {
-      // Logging robusto de errores críticos
+
+      console.log('[WEBHOOK] Async processing complete.');
+    })();
+
+    Promise.race([processingPromise, timeoutPromise]).catch((e) => {
+      // Logging robusto de errores críticos (incluyendo timeouts)
       if (typeof logMessage === 'function') {
         logMessage({
           user_id: undefined,
@@ -690,10 +741,12 @@ router.post('/universal-webhook', (req, res) => {
           extra: { error: e && e.message ? e.message : e, stack: e && e.stack ? e.stack : undefined }
         });
       }
-      console.error('ERROR UNIVERSAL WEBHOOK:', e);
-    }
+      console.error('[WEBHOOK] ERROR in async processing:', e && e.message ? e.message : e);
+      if (e && e.stack) console.error('[WEBHOOK] Stack:', e.stack);
+    });
   });
 });
+
 // ================= VERIFY TOKEN =================
 router.get('/universal-webhook', (req, res) => {
   const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'miverificacionsupersecreta';
