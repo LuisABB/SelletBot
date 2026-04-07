@@ -108,9 +108,8 @@ router.post('/universal-webhook', (req, res) => {
           return;
         }
         const msg = entry.messages[0];
-        let raw_user_id = msg.from;
-        let normalized_user_id = fixMexicanNumber(normalizeNumber(raw_user_id));
-        user_id = normalized_user_id;
+        // Usar SIEMPRE el wa_id original
+        user_id = msg.from;
         console.log('[WEBHOOK] Processing message from user:', user_id, '| type:', msg.type);
 
         // Buscar o crear usuario en la base
@@ -185,7 +184,7 @@ router.post('/universal-webhook', (req, res) => {
           }
           message = msg.interactive.button_reply.id;
           logMessage({
-            user_id: normalized_user_id,
+            user_id,
             role: 'user',
             message,
             step: 'button_reply',
