@@ -9,13 +9,41 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
+// Maximum time (ms) to wait for a single WhatsApp API call before aborting.
+const FETCH_TIMEOUT_MS = 15000;
+
+/**
+ * Wraps node-fetch with an AbortController-based timeout so that a slow or
+ * unresponsive WhatsApp API never stalls the webhook processing chain.
+ */
+async function fetchWithTimeout(url, options, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error(`[WhatsApp API] Request timed out after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function sendWhatsAppRawMessage(body) {
-  const res = await fetch(BASE_URL, {
+  console.log('[WhatsApp API][sendWhatsAppRawMessage] Sending to:', body && body.to, '| type:', body && body.type);
+  const res = await fetchWithTimeout(BASE_URL, {
     method: 'POST',
     headers: HEADERS,
     body: JSON.stringify(body)
   });
-  return res.json();
+  const data = await res.json();
+  console.log('[WhatsApp API][sendWhatsAppRawMessage] response:', JSON.stringify(data));
+  return data;
 }
 
 async function sendWhatsAppImage(to, imageUrl, caption = '') {
@@ -25,13 +53,14 @@ async function sendWhatsAppImage(to, imageUrl, caption = '') {
     type: "image",
     image: { link: imageUrl, caption }
   };
-  const res = await fetch(BASE_URL, {
+  console.log('[WhatsApp API][sendWhatsAppImage] to:', to, '| image:', imageUrl);
+  const res = await fetchWithTimeout(BASE_URL, {
     method: 'POST',
     headers: HEADERS,
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  console.log('[WhatsApp API][sendWhatsAppImage] to:', to, 'image:', imageUrl, 'caption:', caption, 'response:', JSON.stringify(data));
+  console.log('[WhatsApp API][sendWhatsAppImage] to:', to, 'caption:', caption, 'response:', JSON.stringify(data));
   return data;
 }
 
@@ -42,13 +71,14 @@ async function sendWhatsAppMessage(to, text) {
     type: "text",
     text: { body: text }
   };
-  const res = await fetch(BASE_URL, {
+  console.log('[WhatsApp API][sendWhatsAppMessage] to:', to, '| text:', text && text.substring(0, 80));
+  const res = await fetchWithTimeout(BASE_URL, {
     method: 'POST',
     headers: HEADERS,
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  console.log('[WhatsApp API][sendWhatsAppMessage] to:', to, 'text:', text, 'response:', JSON.stringify(data));
+  console.log('[WhatsApp API][sendWhatsAppMessage] to:', to, 'response:', JSON.stringify(data));
   return data;
 }
 
