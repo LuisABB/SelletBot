@@ -21,6 +21,7 @@ function fixMexicanNumber(number) {
 
 // ================= WEBHOOK SIMPLE =================
 router.post('/webhook', (req, res) => {
+    console.log('➡️ POST /webhook', JSON.stringify(req.body));
   const { user_id, message } = req.body;
 
   if (!user_id || !message) {
@@ -33,6 +34,7 @@ router.post('/webhook', (req, res) => {
 
 // ================= WHATSAPP WEBHOOK =================
 router.post('/whatsapp-webhook', async (req, res) => {
+    console.log('➡️ POST /whatsapp-webhook', JSON.stringify(req.body));
   try {
     const entry = req.body.entry?.[0]?.changes?.[0]?.value;
     const msg = entry?.messages?.[0];
